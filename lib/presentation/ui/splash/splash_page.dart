@@ -1,15 +1,16 @@
+import 'package:drawee/presentation/ui/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:drawee/presentation/pags/login/login_pags.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
-  _SplashPageState createState() => _SplashPageState();
+  SplashPageState createState() => SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
