@@ -1,4 +1,4 @@
-package com.oghs.drawee
+package com.example.drawee
 
 import io.flutter.embedding.android.FlutterActivity
 
