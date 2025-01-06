@@ -7,7 +7,7 @@ class MypagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text('MyPage Page'),
+        child: Text('Mypage Page'),
       ),
     );
   }
