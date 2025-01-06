@@ -1,3 +1,4 @@
+import 'package:drawee/presentation/ui/mypage/mypage_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,10 +10,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp(title: 'Flutter Demo', home: MypagePage());
   }
 }
 
