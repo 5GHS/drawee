@@ -7,12 +7,33 @@
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
         "mobilesdk_app_id": "1:1096456258246:android:c00eac31738a79e7450dc7",
+=======
+        "mobilesdk_app_id": "1:1096456258246:android:d9c28b3f7b148922450dc7",
+>>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
         "android_client_info": {
           "package_name": "com.oghs.drawee"
         }
       },
+<<<<<<< HEAD
       "oauth_client": [],
+=======
+      "oauth_client": [
+        {
+          "client_id": "1096456258246-4cbnb01kra3an7vv74l950vd41dh1egk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oghs.drawee",
+            "certificate_hash": "0aeeea7d20a30aacd52c7d7d55dc608c4bb9a4be"
+          }
+        },
+        {
+          "client_id": "1096456258246-6n17hetqbhhc5kvmrn3v29c3oclcmn08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+>>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
       "api_key": [
         {
           "current_key": "AIzaSyB5ror4bFDVqfO_RXwo-Gzvm6hZynV0IqI"
@@ -20,10 +41,30 @@
       ],
       "services": {
         "appinvite_service": {
+<<<<<<< HEAD
           "other_platform_oauth_client": []
+=======
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1096456258246-6n17hetqbhhc5kvmrn3v29c3oclcmn08.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1096456258246-m706qi66f9s8t2ae3tegj3rd9it5vhq6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.oghs.drawee"
+              }
+            }
+          ]
+>>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
         }
       }
     }
   ],
   "configuration_version": "1"
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
