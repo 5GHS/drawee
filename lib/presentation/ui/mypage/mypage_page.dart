@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 class MypagePage extends StatelessWidget {
   MypagePage({super.key});
 
-  List<String> postList = [
+  // GridView.counter에 넣을 그림 목록 (임시 데이터)
+  final List<String> postList = [
     'assets/images/weather_all.jpeg',
     'assets/images/weather_all.jpeg',
     'assets/images/weather_all.jpeg',
