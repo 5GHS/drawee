@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
         children: [
           const Spacer(),
           const Icon(
-            Icons.tag, // 아이콘 변경 필요 (커스텀 로고 사용 시 대체)
+            Icons.tag, // 상단 로고나 아이콘
             size: 100,
             color: Colors.white,
           ),
@@ -28,14 +28,27 @@ class LoginPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Column(
                   children: [
-                    Image.asset(
-                      'assets/icon/logo_icon.png', // 로고 이미지 경로 설정
-                      width: 32,
-                      height: 32,
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6BCF97), // 녹색 배경
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'd', // 아이콘 내부 텍스트
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // 흰색 텍스트
+                          ),
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(height: 8),
                     const Text(
                       '로그인해서 시작하기',
                       style: TextStyle(
@@ -55,47 +68,55 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: 구글 로그인 구현
-                  },
-                  icon: Image.asset(
-                    'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
-                    width: 24,
-                    height: 24,
-                  ),
-                  label: const Text(
-                    '구글 로그인',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Colors.grey),
+                // 구글 로그인 버튼
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // TODO: 구글 로그인 구현
+                    },
+                    icon: Image.asset(
+                      'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: const Text(
+                      '구글 로그인',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: const BorderSide(color: Colors.grey),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: 애플 로그인 구현
-                  },
-                  icon: const Icon(
-                    Icons.apple,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  label: const Text(
-                    '애플 로그인',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                // 애플 로그인 버튼
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // TODO: 애플 로그인 구현
+                    },
+                    icon: const Icon(
+                      Icons.apple,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    label: const Text(
+                      '애플 로그인',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
