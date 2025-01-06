@@ -6,7 +6,7 @@ class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   // 구글 로그인 함수
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     try {
       // 구글 로그인 시도
       final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -27,9 +27,20 @@ class LoginPage extends StatelessWidget {
 
       // Firebase 인증
       final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      return userCredential.user;
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        // 로그인 성공 후 처리 (예: 홈 페이지로 이동)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('로그인 성공: ${user.displayName}')),
+        );
+      }
+      return user;
     } catch (e) {
       print('Google Sign-In Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인 실패: $e')),
+      );
       return null;
     }
   }
@@ -103,8 +114,16 @@ class LoginPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: 구글 로그인 구현
+                    onPressed: () async {
+                      // 구글 로그인 실행
+                      User? user = await signInWithGoogle(context);
+                      if (user != null) {
+                        // 로그인 성공 후 작업
+                        print("로그인 성공: ${user.displayName}");
+                        // 로그인 후 홈 페이지로 이동 등 추가 작업 수행 가능
+                      } else {
+                        print("로그인 실패");
+                      }
                     },
                     icon: Image.asset(
                       'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
