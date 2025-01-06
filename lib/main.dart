@@ -4,6 +4,7 @@ import 'package:drawee/presentation/pags/splash/splash_pags.dart';
 import 'package:drawee/firebase_options.dart';
 
 void main() async {
+  
 WidgetsFlutterBinding.ensureInitialized();
 await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
