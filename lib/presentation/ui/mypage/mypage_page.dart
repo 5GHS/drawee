@@ -3,6 +3,7 @@ import 'package:drawee/presentation/ui/mypage/widgets/weather_box.dart';
 import 'package:drawee/presentation/ui/subject_post/subject_post_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class MypagePage extends StatelessWidget {
   MypagePage({super.key});
@@ -18,7 +19,13 @@ class MypagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(), // TODO : 로고 넣기
+      appBar: AppBar(
+        centerTitle: false,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: SvgPicture.asset('assets/images/mypage_page_logo.svg'),
+        ),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -56,6 +63,7 @@ class MypagePage extends StatelessWidget {
                       child: const Icon(
                         Icons.arrow_forward_ios,
                         color: AppColors.black,
+                        size: 16,
                       ),
                     ),
                   ),
@@ -118,6 +126,7 @@ class MypagePage extends StatelessWidget {
                       child: const Icon(
                         Icons.arrow_forward_ios,
                         color: AppColors.black,
+                        size: 16,
                       ),
                     ),
                   ),
