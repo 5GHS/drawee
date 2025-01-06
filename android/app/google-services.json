@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1096456258246",
+    "project_id": "drawee-f84dc",
+    "storage_bucket": "drawee-f84dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1096456258246:android:c00eac31738a79e7450dc7",
+        "android_client_info": {
+          "package_name": "com.oghs.drawee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5ror4bFDVqfO_RXwo-Gzvm6hZynV0IqI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
