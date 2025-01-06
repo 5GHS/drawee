@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  // 구글 로그인 함수
+  Future<User?> signInWithGoogle() async {
+    try {
+      // 구글 로그인 시도
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return null; // 로그인 취소 시 null 반환
+      }
+
+      // 구글 인증을 통해 인증 토큰을 가져옴
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Firebase에 인증 정보 전달하여 Firebase Auth 로그인
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Firebase 인증
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      return userCredential.user;
+    } catch (e) {
+      print('Google Sign-In Error: $e');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
