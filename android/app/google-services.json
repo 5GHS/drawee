@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1096456258246-c9ra4surogo8ogh9enoosha8l1hj71i9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oghs.drawee",
+            "certificate_hash": "aaa3ef020f862a64632ba95c92e735b0e86dd7f1"
+          }
+        },
+        {
           "client_id": "1096456258246-6n17hetqbhhc5kvmrn3v29c3oclcmn08.apps.googleusercontent.com",
           "client_type": 3
         }
