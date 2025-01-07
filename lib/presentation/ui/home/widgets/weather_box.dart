@@ -8,26 +8,27 @@ class WeatherBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      height: 130,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-            image: AssetImage(
-              imagePath,
-            ),
-            fit: BoxFit.cover),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontFamily: 'Pretendard',
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
-          color: Colors.white,
+    return Expanded(
+      child: Container(
+        height: 130,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+              image: AssetImage(
+                imagePath,
+              ),
+              fit: BoxFit.cover),
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
       ),
     );

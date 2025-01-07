@@ -73,21 +73,23 @@ class HomePage extends StatelessWidget {
               ),
               // 날씨 박스
               const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   WeatherBox('전체', 'assets/images/weather_all.jpeg'),
+                  SizedBox(width: 12),
                   WeatherBox('맑음', 'assets/images/weather_clear.jpeg'),
+                  SizedBox(width: 12),
                   WeatherBox('비', 'assets/images/weather_rainy.jpeg'),
                 ],
               ),
               const SizedBox(
-                height: 16,
+                height: 12,
               ),
               const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   WeatherBox('흐림', 'assets/images/weather_cloudy.jpeg'),
+                  SizedBox(width: 12),
                   WeatherBox('바람', 'assets/images/weather_windy.jpeg'),
+                  SizedBox(width: 12),
                   WeatherBox('눈', 'assets/images/weather_snowy.jpeg'),
                 ],
               ),
