@@ -156,19 +156,20 @@ class HomePage extends StatelessWidget {
                   crossAxisCount: 2,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  childAspectRatio: 0.80,
+                  childAspectRatio: 0.75,
                   children: postList.map(
                     (String path) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            height: 176,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: AssetImage(path),
-                                fit: BoxFit.cover,
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: AssetImage(path),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
