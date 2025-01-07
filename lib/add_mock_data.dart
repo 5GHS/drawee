@@ -6,85 +6,108 @@ import 'package:flutter/material.dart';
 // Weather Enum
 enum Weather { sunny, rainy, cloudy, windy, snowy }
 
-// User Entity
+// -----------------------
+// 1) User Entity
+// -----------------------
 class User {
   final String userId;
   final String name;
-  final List<String> writtenPostIds; // 작성한 글의 postId만 저장
-  final List<String> likedPostIds; // 좋아요 누른 글의 postId만 저장
   final String imgUrl;
+
+  // 추가 필드
+  final List<String> likedPostsIds;
+  final List<String> writtenPostsIds;
 
   User({
     required this.userId,
     required this.name,
-    required this.writtenPostIds,
-    required this.likedPostIds,
     required this.imgUrl,
+    required this.likedPostsIds,
+    required this.writtenPostsIds,
   });
 
   Map<String, dynamic> toFirestore() {
     return {
-      'userId': userId,
       'name': name,
-      'writtenPostIds': writtenPostIds,
-      'likedPostIds': likedPostIds,
       'imgUrl': imgUrl,
+      'likedPostsIds': likedPostsIds,
+      'writtenPostsIds': writtenPostsIds,
     };
   }
 }
 
-// Post Entity (User 객체를 직접 보관)
+// -----------------------
+// 2) Subject
+// -----------------------
+class Subject {
+  final String subjectId;
+  final String topic;
+  final List<String> postsIds;
+
+  Subject({
+    required this.subjectId,
+    required this.topic,
+    required this.postsIds,
+  });
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'topic': topic,
+      'postsIds': postsIds,
+    };
+  }
+}
+
+// -----------------------
+// 3) Post Entity
+// -----------------------
 class Post {
-  final String postId;
   final String title;
   final String content;
   final String imageUrl;
   final DateTime createdAt;
-  final String subject;
+  final String subjectId;
   final Weather weather;
-  final List<String> commentIds;
-  final User user; // userId 대신 User 객체 전체를 저장
-  final int likes;
+  final List<Map<String, dynamic>> comments;
+  final String userId;
+  int likes;
 
   Post({
-    required this.postId,
     required this.title,
     required this.content,
     required this.imageUrl,
     required this.createdAt,
-    required this.subject,
+    required this.subjectId,
     required this.weather,
-    required this.commentIds,
-    required this.user,
+    required this.comments,
+    required this.userId,
     required this.likes,
   });
 
   Map<String, dynamic> toFirestore() {
     return {
-      'postId': postId,
       'title': title,
       'content': content,
       'imageUrl': imageUrl,
       'createdAt': createdAt.toIso8601String(),
-      'subject': subject,
+      'subjectId': subjectId,
       'weather': weather.name,
-      'commentIds': commentIds,
-      // user 필드에 중첩 객체로 User 정보를 저장
-      'user': user.toFirestore(),
+      'comments': comments,
+      'userId': userId,
       'likes': likes,
     };
   }
 }
 
-// Comment Entity
+// -----------------------
+// 4) Comment Entity
+// -----------------------
 class Comment {
-  final String commentId;
   final String content;
   final DateTime createdAt;
   final String userId;
 
   Comment({
-    required this.commentId,
     required this.content,
     required this.createdAt,
     required this.userId,
@@ -92,7 +115,6 @@ class Comment {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'commentId': commentId,
       'content': content,
       'createdAt': createdAt.toIso8601String(),
       'userId': userId,
@@ -100,18 +122,20 @@ class Comment {
   }
 }
 
-// Mock Data Upload Function
-
+// -----------------------
+// 5) Mock Data Upload
+// -----------------------
 class AddMockData extends StatelessWidget {
-  const AddMockData({super.key});
+  const AddMockData({Key? key}) : super(key: key);
 
   Future<void> addMockData() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
     final random = Random();
-
     const weatherOptions = Weather.values;
-    List<String> userNames = [
+
+    // 1) 유저 이름 리스트(섞음)
+    final userNames = [
       '겨울이',
       '돌멩이',
       '고무대야',
@@ -132,76 +156,152 @@ class AddMockData extends StatelessWidget {
       '불국사',
       '해인사팔만대장경',
       '강아지풀'
+    ]..shuffle(random);
+
+    // 2) Subject 목록
+    final topics = [
+      '겨울 도시',
+      '쓸쓸함',
+      '식사 시간',
+      '체력 단련',
+      '인내',
+      '선물',
+      '바람',
+      '이름',
+      '얼굴',
+      '시골쥐와 서울쥐',
+      '콩쥐팥쥐',
+      '얼음 땡',
+      '숨바꼭질',
+      '도시남녀',
+      '풍수지리',
+      '축구',
+      '야구',
+      '시합',
+      '경쟁',
+      '새로운 기술',
     ];
 
-    // 1) User 데이터 생성
-    List<User> users = List.generate(20, (i) {
+    // Subject 데이터 준비
+    final subjectMap = <String, Subject>{};
+    final subjectRefMap = <String, DocumentReference>{};
+
+    for (final topic in topics) {
+      final subjectRef = firestore.collection('subjects').doc();
+      final subject = Subject(
+        subjectId: subjectRef.id,
+        topic: topic,
+        postsIds: [],
+      );
+      subjectMap[topic] = subject;
+      subjectRefMap[topic] = subjectRef;
+    }
+
+    // --------------------------
+    // 3) User 생성 (liked/writtenPostsIds 초기화)
+    // --------------------------
+    final users = List.generate(20, (i) {
+      final userId = firestore.collection('users').doc().id;
       return User(
-        userId: 'user_$i',
-        name: userNames[random.nextInt(userNames.length)],
-        writtenPostIds: [],
-        likedPostIds: [],
+        userId: userId,
+        name: userNames[i],
         imgUrl: 'https://picsum.photos/id/$i/200/',
+        likedPostsIds: [],
+        writtenPostsIds: [],
       );
     });
 
-    // 2) Post 데이터 생성
-    List<Post> posts = List.generate(100, (i) {
-      final randomUser = users[random.nextInt(users.length)];
-      return Post(
-        postId: 'post_$i',
+    // userId -> User 객체 매핑 (나중에 업데이트 편하게)
+    final userMap = {
+      for (var u in users) u.userId: u,
+    };
+
+    // --------------------------
+    // 4) Post 생성
+    // --------------------------
+    // Post를 만들 때, 작성자의 writtenPostsIds에 postId 추가
+    // 그리고 랜덤으로 "좋아요" 누른 유저도 골라, likedPostsIds에 추가 (옵션)
+    final postTuples = List.generate(100, (i) {
+      final postRef = firestore.collection('posts').doc();
+
+      // 랜덤 작성자
+      final writer = users[random.nextInt(users.length)];
+
+      // 랜덤 topic
+      final randomTopic = topics[random.nextInt(topics.length)];
+
+      // 댓글 생성
+      final commentCount = 3 + random.nextInt(2);
+      final comments = List.generate(commentCount, (_) {
+        final commenter = users[random.nextInt(users.length)];
+        return Comment(
+          content: '행복하세요 ^^',
+          createdAt: DateTime.now().subtract(Duration(days: random.nextInt(3))),
+          userId: commenter.userId,
+        ).toFirestore();
+      });
+
+      // Post 객체
+      final post = Post(
         title: '오늘의 그림 일기 ${random.nextInt(1000)}',
         content: '일기를 써보겠습니다. 두근두근',
         imageUrl: 'https://picsum.photos/id/${random.nextInt(1000)}/200/',
         createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
-        subject: 'Subject ${random.nextInt(100)}',
+        subjectId: subjectMap[randomTopic]!.subjectId,
         weather: weatherOptions[random.nextInt(weatherOptions.length)],
-        commentIds: [],
-        user: randomUser,
-        likes: random.nextInt(100),
+        comments: comments,
+        userId: writer.userId, // 작성자
+        likes: 0, // 우선 0으로 시작
       );
+
+      // 4-1) 작성자(writer)의 writtenPostsIds에 postRef.id 추가
+      userMap[writer.userId]!.writtenPostsIds.add(postRef.id);
+
+      // 4-2) Subject의 postsIds에도 추가
+      subjectMap[randomTopic]!.postsIds.add(postRef.id);
+
+      // 4-3) (옵션) 좋아요 누른 유저를 랜덤 선택
+      //     - ex) 0~5명 사이의 유저가 좋아요를 누른다고 가정
+      final likeCount = random.nextInt(6); // 0..5
+      for (int j = 0; j < likeCount; j++) {
+        final liker = users[random.nextInt(users.length)];
+        // liker가 작성자와 같을 수도 있음(자기 글 좋아요)
+        userMap[liker.userId]!.likedPostsIds.add(postRef.id);
+
+        // Post.likes 증가
+        post.likes++;
+      }
+
+      return (postRef: postRef, post: post);
     });
 
-    // 3) Comment 데이터 생성
-    List<Comment> comments = List.generate(200, (i) {
-      final randomPost = posts[random.nextInt(posts.length)];
-      final randomUser = users[random.nextInt(users.length)];
-      final commentId = 'comment_$i';
-
-      randomPost.commentIds.add(commentId);
-
-      return Comment(
-        commentId: commentId,
-        content: '그림이 멋지네요!',
-        createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
-        userId: randomUser.userId,
-      );
-    });
-
-    // 4) Firestore에 업로드 (배치 쓰기)
+    // --------------------------
+    // 5) Batch 업로드
+    // --------------------------
     final batch = firestore.batch();
 
-    // User 업로드
-    for (final user in users) {
+    // (A) Subject 업로드
+    for (final topic in topics) {
+      final subjectRef = subjectRefMap[topic]!;
+      final subjectData = subjectMap[topic]!.toFirestore();
+      batch.set(subjectRef, subjectData);
+    }
+
+    // (B) User 업로드 (likedPostsIds, writtenPostsIds 반영됨)
+    for (final user in userMap.values) {
       final userRef = firestore.collection('users').doc(user.userId);
       batch.set(userRef, user.toFirestore());
     }
 
-    // Post 업로드
-    for (final post in posts) {
-      final postRef = firestore.collection('posts').doc(post.postId);
+    // (C) Post 업로드
+    for (final tuple in postTuples) {
+      final postRef = tuple.postRef;
+      final post = tuple.post;
       batch.set(postRef, post.toFirestore());
     }
 
-    // Comment 업로드
-    for (final comment in comments) {
-      final commentRef =
-          firestore.collection('comments').doc(comment.commentId);
-      batch.set(commentRef, comment.toFirestore());
-    }
-
     await batch.commit();
-    print('Mock data uploaded.');
+    print('Mock data uploaded with liked/writtenPostsIds in users!');
   }
 
   @override
@@ -209,10 +309,9 @@ class AddMockData extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-            onPressed: () {
-              addMockData();
-            },
-            child: const Text("add data")),
+          onPressed: addMockData,
+          child: const Text("add data"),
+        ),
       ),
     );
   }
