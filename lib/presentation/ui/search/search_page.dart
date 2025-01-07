@@ -70,7 +70,8 @@ class SearchPage extends StatelessWidget {
             ),
             // 제목
             Text(
-              // 우선 bool로 처리했지만 데이터 들어올 때 setState나 다른 상태관리로 변경
+              // 우선 bool로 처리했지만
+              // 뷰모델에서 검색 결과가 없으면 오늘의 주제 띄우게 설정
               textEditingController.text == '' ? '오늘의 주제' : '검색 결과',
               style: const TextStyle(
                 fontFamily: 'Pretendard',
