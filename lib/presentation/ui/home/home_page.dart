@@ -29,8 +29,7 @@ class HomePage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               // 제목 1 - 마음 날씨별 보기
               Row(
@@ -72,25 +71,25 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
-              // 날씨별 박스
-              SizedBox(
-                width: double.infinity,
-                height: 260,
-                child: GridView(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                  ),
-                  children: const [
-                    WeatherBox('전체', 'assets/images/weather_all.jpeg'),
-                    WeatherBox('맑음', 'assets/images/weather_clear.jpeg'),
-                    WeatherBox('비', 'assets/images/weather_rainy.jpeg'),
-                    WeatherBox('흐림', 'assets/images/weather_cloudy.jpeg'),
-                    WeatherBox('바람', 'assets/images/weather_windy.jpeg'),
-                    WeatherBox('눈', 'assets/images/weather_snowy.jpeg'),
-                  ],
-                ),
+              // 날씨 박스
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  WeatherBox('전체', 'assets/images/weather_all.jpeg'),
+                  WeatherBox('맑음', 'assets/images/weather_clear.jpeg'),
+                  WeatherBox('비', 'assets/images/weather_rainy.jpeg'),
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  WeatherBox('흐림', 'assets/images/weather_cloudy.jpeg'),
+                  WeatherBox('바람', 'assets/images/weather_windy.jpeg'),
+                  WeatherBox('눈', 'assets/images/weather_snowy.jpeg'),
+                ],
               ),
               const SizedBox(
                 height: 24,
