@@ -97,6 +97,7 @@ class HomePage extends StatelessWidget {
               // 제목 2 - 오늘의 주제 보기
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const Text(
                     '오늘의 주제',
@@ -172,6 +173,7 @@ class HomePage extends StatelessWidget {
                           const SizedBox(
                             height: 12,
                           ),
+                          // 게시글 제목
                           const Text(
                             '제목',
                             style: TextStyle(
@@ -181,6 +183,7 @@ class HomePage extends StatelessWidget {
                               color: AppColors.black,
                             ),
                           ),
+                          // 게시글 작성자
                           const Text(
                             '작성자',
                             style: TextStyle(
