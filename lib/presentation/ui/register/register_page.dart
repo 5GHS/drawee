@@ -1,6 +1,8 @@
+import 'package:drawee/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
 class RegisterPage extends StatefulWidget {
@@ -37,12 +39,21 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // 회원가입 완료 함수
-  void _completeRegistration() {
+  void _completeRegistration() async {
     String name = _nameController.text.trim();
 
     if (name.isNotEmpty) {
-      // HomePage로 이동
-      Navigator.pushReplacementNamed(context, '/home');
+      // Firebase Authentication과 Firestore에 사용자 정보 업데이트
+      try {
+        await AuthService().updateUserProfile(name, _profileImage);
+
+        // HomePage로 이동
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('회원가입 중 오류가 발생했습니다: $e')),
+        );
+      }
     } else {
       // 이름 입력하지 않은 경우 경고 메시지 표시
       ScaffoldMessenger.of(context).showSnackBar(
