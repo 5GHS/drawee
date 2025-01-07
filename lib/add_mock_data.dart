@@ -46,13 +46,13 @@ class Subject {
   }
 }
 
-// Post Entity (User 객체를 직접 보관)
+// Post Entity
 class Post {
   final String title;
   final String content;
   final String imageUrl;
   final DateTime createdAt;
-  final String subjectId; // subject 문서 id
+  final String subjectId;
   final Weather weather;
   final List<Map<String, dynamic>> comments;
   final String userId;
@@ -117,6 +117,8 @@ class AddMockData extends StatelessWidget {
     final random = Random();
 
     const weatherOptions = Weather.values;
+
+    // 1) 서로 다른 닉네임 사용을 위해 userNames를 섞어둠
     List<String> userNames = [
       '겨울이',
       '돌멩이',
@@ -141,6 +143,7 @@ class AddMockData extends StatelessWidget {
     ];
     userNames.shuffle(random);
 
+    // 2) Subject 주제 목록
     List<String> topics = [
       '겨울 도시',
       '쓸쓸함',
@@ -164,43 +167,62 @@ class AddMockData extends StatelessWidget {
       '새로운 기술',
     ];
 
-    // Subject 데이터
-    Map<String, Subject> subjectMap = {};
+    // 3) Subject 데이터를 미리 생성
+    //    subjectMap: "topic" → Subject 객체
+    //    subjectRefMap: "topic" → DocumentReference
+    final subjectMap = <String, Subject>{};
+    final subjectRefMap = <String, DocumentReference>{};
+
     for (final topic in topics) {
       final subjectRef = firestore.collection('subjects').doc();
-      final subject =
-          Subject(subjectId: subjectRef.id, topic: topic, postsIds: []);
-      await subjectRef.set(subject.toFirestore());
+      final subject = Subject(
+        subjectId: subjectRef.id,
+        topic: topic,
+        postsIds: [],
+      );
+      // 여기서 "즉시" Firestore에 저장 가능하지만,
+      // 이 예시는 일관성을 위해 batch에 넣을 예정
+
       subjectMap[topic] = subject;
+      subjectRefMap[topic] = subjectRef;
     }
 
-    // 1) User 데이터 생성
+    // 4) User 데이터 생성 (20명)
     List<User> users = List.generate(20, (i) {
       final userId = firestore.collection('users').doc().id;
       return User(
         userId: userId,
-        name: userNames[i],
+        name: userNames[i], // 섞어놓은 닉네임
         imgUrl: 'https://picsum.photos/id/$i/200/',
       );
     });
 
-    // subject 데이터 생성
+    // 5) Post 데이터 생성 (100개)
+    //    - Post를 Firestore에 저장할 때, 그 "문서 ID"를 subjectMap[topic].postsIds에 추가
+    //    - Post 문서 ID를 알기 위해서는 doc()를 먼저 생성해야 함
+    //    - 아래에서는 (postRef, post) 튜플을 담음
+    final postTuples = List.generate(100, (index) {
+      // Firestore 문서 ID 얻기
+      final postRef = firestore.collection('posts').doc();
 
-    // 2) Post 데이터 생성
-    List<Post> posts = List.generate(100, (i) {
+      // 랜덤 사용자
       final randomUser = users[random.nextInt(users.length)];
+      // 랜덤 주제
       final randomTopic = topics[random.nextInt(topics.length)];
-      List<Map<String, dynamic>> comments =
-          List.generate(3 + random.nextInt(2), (j) {
+
+      // 댓글 생성
+      final commentCount = 3 + random.nextInt(2); // 3 or 4
+      List<Map<String, dynamic>> comments = List.generate(commentCount, (_) {
         final commentWriter = users[random.nextInt(users.length)];
         return Comment(
-                content: '행복하세요 ^^',
-                createdAt:
-                    DateTime.now().subtract(Duration(days: random.nextInt(3))),
-                userId: commentWriter.userId)
-            .toFirestore();
+          content: '행복하세요 ^^',
+          createdAt: DateTime.now().subtract(Duration(days: random.nextInt(3))),
+          userId: commentWriter.userId,
+        ).toFirestore();
       });
-      return Post(
+
+      // Post 객체
+      final post = Post(
         title: '오늘의 그림 일기 ${random.nextInt(1000)}',
         content: '일기를 써보겠습니다. 두근두근',
         imageUrl: 'https://picsum.photos/id/${random.nextInt(1000)}/200/',
@@ -211,25 +233,41 @@ class AddMockData extends StatelessWidget {
         userId: randomUser.userId,
         likes: random.nextInt(100),
       );
+
+      // ★ subjectMap에서 randomTopic에 해당하는 subject의 postsIds에
+      //   지금 만들 postRef.id를 추가
+      subjectMap[randomTopic]!.postsIds.add(postRef.id);
+
+      // postRef와 post 객체를 튜플로 반환
+      return (postRef: postRef, post: post);
     });
 
-    // 4) Firestore에 업로드 (배치 쓰기)
+    // 6) 이제 Batch로 일괄 업로드
     final batch = firestore.batch();
 
-    // User 업로드
+    // 6-1) Subject 업로드
+    //     이미 subjectMap과 subjectRefMap이 있으니, set()으로 저장
+    for (final topic in topics) {
+      final subjectRef = subjectRefMap[topic]!;
+      final subjectData = subjectMap[topic]!.toFirestore();
+      batch.set(subjectRef, subjectData);
+    }
+
+    // 6-2) User 업로드
     for (final user in users) {
-      final userRef = firestore.collection('users').doc();
+      final userRef = firestore.collection('users').doc(user.userId);
       batch.set(userRef, user.toFirestore());
     }
 
-    // Post 업로드
-    for (final post in posts) {
-      final postRef = firestore.collection('posts').doc();
+    // 6-3) Post 업로드
+    for (final tuple in postTuples) {
+      final postRef = tuple.postRef;
+      final post = tuple.post;
       batch.set(postRef, post.toFirestore());
     }
 
     await batch.commit();
-    print('Mock data uploaded.');
+    print('Mock data uploaded (including postsIds in subject).');
   }
 
   @override
@@ -237,10 +275,9 @@ class AddMockData extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-            onPressed: () {
-              addMockData();
-            },
-            child: const Text("add data")),
+          onPressed: addMockData,
+          child: const Text("add data"),
+        ),
       ),
     );
   }
