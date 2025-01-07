@@ -1,4 +1,4 @@
-import 'package:drawee/auth_service.dart';
+import 'package:drawee/firebase/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (name.isNotEmpty) {
       // Firebase Authentication과 Firestore에 사용자 정보 업데이트
       try {
-        await AuthService().updateUserProfile(name, _profileImage);
+        await AuthService().updateUserProfile(name);
 
         // HomePage로 이동
         Navigator.pushReplacementNamed(context, '/home');
