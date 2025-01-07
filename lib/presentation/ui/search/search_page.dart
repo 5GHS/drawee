@@ -79,6 +79,16 @@ class SearchPage extends StatelessWidget {
                 color: AppColors.black,
               ),
             ),
+            // 검색 결과 리스트뷰
+            ListView.builder(
+              itemBuilder: (context, index) {
+                return Text(
+                  // 임시 데이터
+                  '#data',
+                  style: TextStyle(color: AppColors.green),
+                );
+              },
+            )
           ],
         ),
       ),
