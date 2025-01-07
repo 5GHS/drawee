@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // 이미지 선택 함수
-  void _selectProfileImage() async {
+  Future<void> _selectProfileImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -36,13 +36,30 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  // 회원가입 완료 함수
+  void _completeRegistration() {
+    String name = _nameController.text.trim();
+
+    if (name.isNotEmpty) {
+      // HomePage로 이동
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // 이름 입력하지 않은 경우 경고 메시지 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이름을 입력해주세요!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // 회원가입 배경색 흰색 설정
+      backgroundColor: Colors.white, // 회원가입 배경색 흰색
       appBar: AppBar(
         title: const Text('회원가입'),
         backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
       ),
       body: Stack(
         children: [
@@ -106,18 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  String name = _nameController.text.trim();
-                  if (name.isNotEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('회원가입 완료: $name')),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('맞기 싫으면 입력해라.')),
-                    );
-                  }
-                },
+                onPressed: _completeRegistration,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6BCF97), // 버튼 배경색
                   shape: RoundedRectangleBorder(
