@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:drawee/presentation/ui/register/register_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   // 구글 로그인 함수
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     try {
-      // 구글 로그인 시도
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
@@ -16,19 +16,24 @@ class LoginPage extends StatelessWidget {
         return null; // 로그인 취소 시 null 반환
       }
 
-      // 구글 인증을 통해 인증 토큰을 가져옴
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      // Firebase에 인증 정보 전달하여 Firebase Auth 로그인
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Firebase 인증
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // 로그인 성공 시 RegisterPage로 이동
+      if (userCredential.user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const RegisterPage()),
+        );
+      }
+
       return userCredential.user;
     } catch (e) {
       print('Google Sign-In Error: $e');
@@ -46,7 +51,7 @@ class LoginPage extends StatelessWidget {
           const Spacer(),
           const Icon(
             Icons.tag, // 상단 로고나 아이콘
-            size: 100,
+            size: 120, // 크기 키움
             color: Colors.white,
           ),
           const Spacer(),
@@ -106,7 +111,7 @@ class LoginPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      signInWithGoogle();
+                      signInWithGoogle(context);  // 로그인 후 페이지 이동
                     },
                     icon: Image.asset(
                       'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
