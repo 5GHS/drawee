@@ -21,12 +21,13 @@ class UserService {
         // Firestore에 사용자 정보 업데이트
         Map<String, dynamic> updatedData = {
           'name': name,
-          'email': user.email,
-          'uid': user.uid,
+          'imgUrl': user.photoURL ?? '', // 기본값 설정
+          'likedPostsIds': [], // 좋아요한 게시물 ID 배열
+          'writtenPostIds': [], // 작성한 게시물 ID 배열
         };
         await _firestore.collection('users').doc(user.uid).set(
               updatedData,
-              SetOptions(merge: true),
+              SetOptions(merge: true), // 기존 데이터와 병합
             );
 
         print('User profile updated successfully.');

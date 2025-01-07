@@ -16,7 +16,6 @@ class AuthService {
       print('Google Sign-In Error: $e');
       return null;
     }
-    return null;
   }
 
   // 로그아웃
@@ -24,20 +23,21 @@ class AuthService {
     await _auth.signOut();
   }
 
-  // 사용자 이름 업데이트
-  Future<void> updateUserProfile(String name) async {
+  // 사용자 정보 업데이트
+  Future<void> updateUserProfile(String name, {String imgUrl = ""}) async {
     User? user = _auth.currentUser;
 
     if (user != null) {
-      // Firebase Authentication에 이름 업데이트
       try {
+        // Firebase Authentication에 이름 업데이트
         await user.updateDisplayName(name);
 
         // Firestore에 사용자 정보 업데이트
         await _firestore.collection('users').doc(user.uid).set({
-          'name': name,
-          'email': user.email,
-          'uid': user.uid,
+          'name': name, // 이름
+          'imgUrl': imgUrl, // 프로필 이미지 URL
+          'likedPostsIds': [], // 사용자가 좋아요한 게시물 ID 목록
+          'writtenPostIds': [], // 사용자가 작성한 게시물 ID 목록
         }, SetOptions(merge: true)); // 기존 데이터와 병합
       } catch (e) {
         print("Error updating user profile: $e");
