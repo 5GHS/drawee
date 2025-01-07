@@ -6,27 +6,39 @@ import 'package:flutter/material.dart';
 // Weather Enum
 enum Weather { sunny, rainy, cloudy, windy, snowy }
 
-// User Entity
+// -----------------------
+// 1) User Entity
+// -----------------------
 class User {
   final String userId;
   final String name;
   final String imgUrl;
 
+  // 추가 필드
+  final List<String> likedPostsIds;
+  final List<String> writtenPostsIds;
+
   User({
     required this.userId,
     required this.name,
     required this.imgUrl,
+    required this.likedPostsIds,
+    required this.writtenPostsIds,
   });
 
   Map<String, dynamic> toFirestore() {
     return {
       'name': name,
       'imgUrl': imgUrl,
+      'likedPostsIds': likedPostsIds,
+      'writtenPostsIds': writtenPostsIds,
     };
   }
 }
 
-// Subject
+// -----------------------
+// 2) Subject
+// -----------------------
 class Subject {
   final String subjectId;
   final String topic;
@@ -46,7 +58,9 @@ class Subject {
   }
 }
 
-// Post Entity
+// -----------------------
+// 3) Post Entity
+// -----------------------
 class Post {
   final String title;
   final String content;
@@ -56,7 +70,7 @@ class Post {
   final Weather weather;
   final List<Map<String, dynamic>> comments;
   final String userId;
-  final int likes;
+  int likes;
 
   Post({
     required this.title,
@@ -85,7 +99,9 @@ class Post {
   }
 }
 
-// Comment Entity
+// -----------------------
+// 4) Comment Entity
+// -----------------------
 class Comment {
   final String content;
   final DateTime createdAt;
@@ -106,20 +122,20 @@ class Comment {
   }
 }
 
-// Mock Data Upload Function
-
+// -----------------------
+// 5) Mock Data Upload
+// -----------------------
 class AddMockData extends StatelessWidget {
-  const AddMockData({super.key});
+  const AddMockData({Key? key}) : super(key: key);
 
   Future<void> addMockData() async {
     await Firebase.initializeApp();
     final firestore = FirebaseFirestore.instance;
     final random = Random();
-
     const weatherOptions = Weather.values;
 
-    // 1) 서로 다른 닉네임 사용을 위해 userNames를 섞어둠
-    List<String> userNames = [
+    // 1) 유저 이름 리스트(섞음)
+    final userNames = [
       '겨울이',
       '돌멩이',
       '고무대야',
@@ -140,11 +156,10 @@ class AddMockData extends StatelessWidget {
       '불국사',
       '해인사팔만대장경',
       '강아지풀'
-    ];
-    userNames.shuffle(random);
+    ]..shuffle(random);
 
-    // 2) Subject 주제 목록
-    List<String> topics = [
+    // 2) Subject 목록
+    final topics = [
       '겨울 도시',
       '쓸쓸함',
       '식사 시간',
@@ -167,9 +182,7 @@ class AddMockData extends StatelessWidget {
       '새로운 기술',
     ];
 
-    // 3) Subject 데이터를 미리 생성
-    //    subjectMap: "topic" → Subject 객체
-    //    subjectRefMap: "topic" → DocumentReference
+    // Subject 데이터 준비
     final subjectMap = <String, Subject>{};
     final subjectRefMap = <String, DocumentReference>{};
 
@@ -180,44 +193,51 @@ class AddMockData extends StatelessWidget {
         topic: topic,
         postsIds: [],
       );
-      // 여기서 "즉시" Firestore에 저장 가능하지만,
-      // 이 예시는 일관성을 위해 batch에 넣을 예정
-
       subjectMap[topic] = subject;
       subjectRefMap[topic] = subjectRef;
     }
 
-    // 4) User 데이터 생성 (20명)
-    List<User> users = List.generate(20, (i) {
+    // --------------------------
+    // 3) User 생성 (liked/writtenPostsIds 초기화)
+    // --------------------------
+    final users = List.generate(20, (i) {
       final userId = firestore.collection('users').doc().id;
       return User(
         userId: userId,
-        name: userNames[i], // 섞어놓은 닉네임
+        name: userNames[i],
         imgUrl: 'https://picsum.photos/id/$i/200/',
+        likedPostsIds: [],
+        writtenPostsIds: [],
       );
     });
 
-    // 5) Post 데이터 생성 (100개)
-    //    - Post를 Firestore에 저장할 때, 그 "문서 ID"를 subjectMap[topic].postsIds에 추가
-    //    - Post 문서 ID를 알기 위해서는 doc()를 먼저 생성해야 함
-    //    - 아래에서는 (postRef, post) 튜플을 담음
-    final postTuples = List.generate(100, (index) {
-      // Firestore 문서 ID 얻기
+    // userId -> User 객체 매핑 (나중에 업데이트 편하게)
+    final userMap = {
+      for (var u in users) u.userId: u,
+    };
+
+    // --------------------------
+    // 4) Post 생성
+    // --------------------------
+    // Post를 만들 때, 작성자의 writtenPostsIds에 postId 추가
+    // 그리고 랜덤으로 "좋아요" 누른 유저도 골라, likedPostsIds에 추가 (옵션)
+    final postTuples = List.generate(100, (i) {
       final postRef = firestore.collection('posts').doc();
 
-      // 랜덤 사용자
-      final randomUser = users[random.nextInt(users.length)];
-      // 랜덤 주제
+      // 랜덤 작성자
+      final writer = users[random.nextInt(users.length)];
+
+      // 랜덤 topic
       final randomTopic = topics[random.nextInt(topics.length)];
 
       // 댓글 생성
-      final commentCount = 3 + random.nextInt(2); // 3 or 4
-      List<Map<String, dynamic>> comments = List.generate(commentCount, (_) {
-        final commentWriter = users[random.nextInt(users.length)];
+      final commentCount = 3 + random.nextInt(2);
+      final comments = List.generate(commentCount, (_) {
+        final commenter = users[random.nextInt(users.length)];
         return Comment(
           content: '행복하세요 ^^',
           createdAt: DateTime.now().subtract(Duration(days: random.nextInt(3))),
-          userId: commentWriter.userId,
+          userId: commenter.userId,
         ).toFirestore();
       });
 
@@ -230,36 +250,50 @@ class AddMockData extends StatelessWidget {
         subjectId: subjectMap[randomTopic]!.subjectId,
         weather: weatherOptions[random.nextInt(weatherOptions.length)],
         comments: comments,
-        userId: randomUser.userId,
-        likes: random.nextInt(100),
+        userId: writer.userId, // 작성자
+        likes: 0, // 우선 0으로 시작
       );
 
-      // ★ subjectMap에서 randomTopic에 해당하는 subject의 postsIds에
-      //   지금 만들 postRef.id를 추가
+      // 4-1) 작성자(writer)의 writtenPostsIds에 postRef.id 추가
+      userMap[writer.userId]!.writtenPostsIds.add(postRef.id);
+
+      // 4-2) Subject의 postsIds에도 추가
       subjectMap[randomTopic]!.postsIds.add(postRef.id);
 
-      // postRef와 post 객체를 튜플로 반환
+      // 4-3) (옵션) 좋아요 누른 유저를 랜덤 선택
+      //     - ex) 0~5명 사이의 유저가 좋아요를 누른다고 가정
+      final likeCount = random.nextInt(6); // 0..5
+      for (int j = 0; j < likeCount; j++) {
+        final liker = users[random.nextInt(users.length)];
+        // liker가 작성자와 같을 수도 있음(자기 글 좋아요)
+        userMap[liker.userId]!.likedPostsIds.add(postRef.id);
+
+        // Post.likes 증가
+        post.likes++;
+      }
+
       return (postRef: postRef, post: post);
     });
 
-    // 6) 이제 Batch로 일괄 업로드
+    // --------------------------
+    // 5) Batch 업로드
+    // --------------------------
     final batch = firestore.batch();
 
-    // 6-1) Subject 업로드
-    //     이미 subjectMap과 subjectRefMap이 있으니, set()으로 저장
+    // (A) Subject 업로드
     for (final topic in topics) {
       final subjectRef = subjectRefMap[topic]!;
       final subjectData = subjectMap[topic]!.toFirestore();
       batch.set(subjectRef, subjectData);
     }
 
-    // 6-2) User 업로드
-    for (final user in users) {
+    // (B) User 업로드 (likedPostsIds, writtenPostsIds 반영됨)
+    for (final user in userMap.values) {
       final userRef = firestore.collection('users').doc(user.userId);
       batch.set(userRef, user.toFirestore());
     }
 
-    // 6-3) Post 업로드
+    // (C) Post 업로드
     for (final tuple in postTuples) {
       final postRef = tuple.postRef;
       final post = tuple.post;
@@ -267,7 +301,7 @@ class AddMockData extends StatelessWidget {
     }
 
     await batch.commit();
-    print('Mock data uploaded (including postsIds in subject).');
+    print('Mock data uploaded with liked/writtenPostsIds in users!');
   }
 
   @override
