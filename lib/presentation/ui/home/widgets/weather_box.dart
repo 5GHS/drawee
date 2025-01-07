@@ -9,8 +9,8 @@ class WeatherBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 114,
-      height: 120,
+      width: 120,
+      height: 130,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.blue,
