@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB5ror4bFDVqfO_RXwo-Gzvm6hZynV0IqI',
-    appId: '1:1096456258246:android:c00eac31738a79e7450dc7',
+    appId: '1:1096456258246:android:d9c28b3f7b148922450dc7',
     messagingSenderId: '1096456258246',
     projectId: 'drawee-f84dc',
     storageBucket: 'drawee-f84dc.firebasestorage.app',
@@ -59,10 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCKT6wadJ8HpL8NUWPgF90A12nVDjHA1PI',
-    appId: '1:1096456258246:ios:69cdc622bf95543f450dc7',
+    appId: '1:1096456258246:ios:7e112101ae48f5cc450dc7',
     messagingSenderId: '1096456258246',
     projectId: 'drawee-f84dc',
     storageBucket: 'drawee-f84dc.firebasestorage.app',
-    iosBundleId: 'com.example.drawee',
+    androidClientId: '1096456258246-c9ra4surogo8ogh9enoosha8l1hj71i9.apps.googleusercontent.com',
+    iosClientId: '1096456258246-m706qi66f9s8t2ae3tegj3rd9it5vhq6.apps.googleusercontent.com',
+    iosBundleId: 'com.oghs.drawee',
   );
 }

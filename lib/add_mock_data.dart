@@ -101,127 +101,119 @@ class Comment {
 }
 
 // Mock Data Upload Function
-Future<void> addMockData() async {
-  await Firebase.initializeApp();
-  final firestore = FirebaseFirestore.instance;
-  final random = Random();
 
-  final weatherOptions = Weather.values;
+class AddMockData extends StatelessWidget {
+  const AddMockData({super.key});
 
-  // 사용자 이름 후보
-  List<String> userNames = [
-    '겨울이',
-    '돌멩이',
-    '고무대야',
-    '김장김치',
-    '임연수구이',
-    '치즈계란말이',
-    '감자전',
-    '봉오동',
-    '캔디팝팝',
-    '캔따개',
-    '루피',
-    '고무고무',
-    '후크선장',
-    '팅커벨',
-    '아티스트',
-    '링딩동',
-    '청댬둉',
-    '불국사',
-    '해인사팔만대장경',
-    '강아지풀'
-  ];
+  Future<void> addMockData() async {
+    await Firebase.initializeApp();
+    final firestore = FirebaseFirestore.instance;
+    final random = Random();
 
-  // 1) Users 생성 (in memory)
-  List<User> users = [];
-  for (int i = 0; i < 20; i++) {
-    final userDocRef = firestore.collection('users').doc();
+    const weatherOptions = Weather.values;
+    List<String> userNames = [
+      '겨울이',
+      '돌멩이',
+      '고무대야',
+      '김장김치',
+      '임연수구이',
+      '치즈계란말이',
+      '감자전',
+      '봉오동',
+      '캔디팝팝',
+      '캔따개',
+      '루피',
+      '고무고무',
+      '후크선장',
+      '팅커벨',
+      '아티스트',
+      '링딩동',
+      '청댬둉',
+      '불국사',
+      '해인사팔만대장경',
+      '강아지풀'
+    ];
 
-    final user = User(
-      userId: userDocRef.id,
-      name: userNames[random.nextInt(userNames.length)],
-      writtenPostIds: [],
-      likedPostIds: [],
-      imgUrl: 'https://picsum.photos/id/$i/200/',
-    );
-    users.add(user);
+    // 1) User 데이터 생성
+    List<User> users = List.generate(20, (i) {
+      return User(
+        userId: 'user_$i',
+        name: userNames[random.nextInt(userNames.length)],
+        writtenPostIds: [],
+        likedPostIds: [],
+        imgUrl: 'https://picsum.photos/id/$i/200/',
+      );
+    });
+
+    // 2) Post 데이터 생성
+    List<Post> posts = List.generate(100, (i) {
+      final randomUser = users[random.nextInt(users.length)];
+      return Post(
+        postId: 'post_$i',
+        title: '오늘의 그림 일기 ${random.nextInt(1000)}',
+        content: '일기를 써보겠습니다. 두근두근',
+        imageUrl: 'https://picsum.photos/id/${random.nextInt(1000)}/200/',
+        createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
+        subject: 'Subject ${random.nextInt(100)}',
+        weather: weatherOptions[random.nextInt(weatherOptions.length)],
+        commentIds: [],
+        user: randomUser,
+        likes: random.nextInt(100),
+      );
+    });
+
+    // 3) Comment 데이터 생성
+    List<Comment> comments = List.generate(200, (i) {
+      final randomPost = posts[random.nextInt(posts.length)];
+      final randomUser = users[random.nextInt(users.length)];
+      final commentId = 'comment_$i';
+
+      randomPost.commentIds.add(commentId);
+
+      return Comment(
+        commentId: commentId,
+        content: '그림이 멋지네요!',
+        createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
+        userId: randomUser.userId,
+      );
+    });
+
+    // 4) Firestore에 업로드 (배치 쓰기)
+    final batch = firestore.batch();
+
+    // User 업로드
+    for (final user in users) {
+      final userRef = firestore.collection('users').doc(user.userId);
+      batch.set(userRef, user.toFirestore());
+    }
+
+    // Post 업로드
+    for (final post in posts) {
+      final postRef = firestore.collection('posts').doc(post.postId);
+      batch.set(postRef, post.toFirestore());
+    }
+
+    // Comment 업로드
+    for (final comment in comments) {
+      final commentRef =
+          firestore.collection('comments').doc(comment.commentId);
+      batch.set(commentRef, comment.toFirestore());
+    }
+
+    await batch.commit();
+    print('Mock data uploaded.');
   }
 
-  // 2) Posts 생성 (in memory)
-  List<Post> posts = [];
-  for (int i = 0; i < 100; i++) {
-    final randomUser = users[random.nextInt(users.length)];
-    final postDocRef = firestore.collection('posts').doc();
-
-    final post = Post(
-      postId: postDocRef.id,
-      title: '오늘의 그림 일기 ${random.nextInt(1000)}',
-      content: '일기를 써보겠습니다. 두근두근',
-      imageUrl: 'https://picsum.photos/id/${random.nextInt(1000)}/200/',
-      createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
-      subject: 'Subject ${random.nextInt(100)}',
-      weather: weatherOptions[random.nextInt(weatherOptions.length)],
-      commentIds: [],
-      user: randomUser, // user 객체 전체를 보관
-      likes: random.nextInt(100),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              addMockData();
+            },
+            child: const Text("add data")),
+      ),
     );
-
-    // 해당 user가 작성한 글 목록(writtenPostIds)에 postId 추가
-    randomUser.writtenPostIds.add(post.postId);
-
-    posts.add(post);
   }
-
-  // 3) Comments 생성 (in memory) - 총 200개의 댓글
-  List<Comment> comments = [];
-  for (int i = 0; i < 200; i++) {
-    final randomPost = posts[random.nextInt(posts.length)];
-    final randomUser = users[random.nextInt(users.length)];
-    final commentDocRef = firestore.collection('comments').doc();
-
-    final comment = Comment(
-      commentId: commentDocRef.id,
-      content: '그림이 멋지네요!',
-      createdAt: DateTime.now().subtract(Duration(days: random.nextInt(30))),
-      userId: randomUser.userId,
-    );
-
-    // 해당 post가 가진 commentIds에 이 comment의 ID를 추가
-    randomPost.commentIds.add(comment.commentId);
-
-    comments.add(comment);
-  }
-
-  // 4) Firestore 업로드
-  // (1) Users 업로드 (병렬)
-  await Future.wait(users.map((user) {
-    return firestore
-        .collection('users')
-        .doc(user.userId)
-        .set(user.toFirestore());
-  }));
-  print('Users uploaded.');
-
-  // (2) Posts 업로드 (병렬)
-  await Future.wait(posts.map((post) {
-    return firestore
-        .collection('posts')
-        .doc(post.postId)
-        .set(post.toFirestore());
-  }));
-  print('Posts uploaded.');
-
-  // (3) Comments 업로드 (병렬)
-  await Future.wait(comments.map((comment) {
-    return firestore
-        .collection('comments')
-        .doc(comment.commentId)
-        .set(comment.toFirestore());
-  }));
-  print('Comments uploaded.');
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await addMockData();
 }

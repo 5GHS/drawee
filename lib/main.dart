@@ -1,7 +1,7 @@
-import 'package:drawee/presentation/ui/search/search_page.dart';
+import 'package:drawee/add_mock_data.dart';
+import 'package:drawee/presentation/ui/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:drawee/presentation/pags/splash/splash_pags.dart';
 import 'package:drawee/firebase_options.dart';
 
 void main() async {
@@ -14,16 +14,13 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return const MaterialApp(
       title: 'drawee',
-      theme: ThemeData.dark(),
-      //home: const SplashPage(),
-      home: SearchPage(),
+      home: AddMockData(),
     );
   }
 }
