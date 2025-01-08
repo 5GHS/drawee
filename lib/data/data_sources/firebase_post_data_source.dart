@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drawee/data/data_sources/post_data_source.dart';
-import 'package:drawee/data/dto/post_response_dto.dart';
+import 'package:drawee/data/dto/post_dto.dart';
 
 class FirebasePostDataSource implements PostDataSource {
   final FirebaseFirestore _firestore;
@@ -8,11 +8,11 @@ class FirebasePostDataSource implements PostDataSource {
   FirebasePostDataSource(this._firestore);
 
   @override
-  Future<PostResponseDTO?> getPost(String postId) async {
+  Future<PostDTO?> getPost(String postId) async {
     try {
       final doc = await _firestore.collection('posts').doc(postId).get();
       if (doc.exists) {
-        return PostResponseDTO.fromJson(doc.data()!, doc.id);
+        return PostDTO.fromJson(doc.data()!, doc.id);
       }
       return null;
     } catch (e) {
@@ -22,11 +22,11 @@ class FirebasePostDataSource implements PostDataSource {
   }
 
   @override
-  Future<List<PostResponseDTO>> getPosts() async {
+  Future<List<PostDTO>> getPosts() async {
     try {
       final snapshot = await _firestore.collection('posts').get();
       return snapshot.docs
-          .map((doc) => PostResponseDTO.fromJson(doc.data(), doc.id))
+          .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
     } catch (e) {
       print(e);
@@ -35,14 +35,14 @@ class FirebasePostDataSource implements PostDataSource {
   }
 
   @override
-  Future<List<PostResponseDTO>> getPostsByWeather(String weather) async {
+  Future<List<PostDTO>> getPostsByWeather(String weather) async {
     try {
       final snapshot = await _firestore
           .collection('posts')
           .where('weather', isEqualTo: weather)
           .get();
       return snapshot.docs
-          .map((doc) => PostResponseDTO.fromJson(doc.data(), doc.id))
+          .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
     } catch (e) {
       print(e);
@@ -81,14 +81,14 @@ class FirebasePostDataSource implements PostDataSource {
   }
 
   @override
-  Future<List<PostResponseDTO>> getPostsBySubjectId(String subjectId) async {
+  Future<List<PostDTO>> getPostsBySubjectId(String subjectId) async {
     try {
       final snapshot = await _firestore
           .collection('posts')
           .where('subjectId', isEqualTo: subjectId)
           .get();
       return snapshot.docs
-          .map((doc) => PostResponseDTO.fromJson(doc.data(), doc.id))
+          .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
     } catch (e) {
       print(e);
@@ -97,14 +97,14 @@ class FirebasePostDataSource implements PostDataSource {
   }
 
   @override
-  Future<List<PostResponseDTO>> getPostsByUserId(String userId) async {
+  Future<List<PostDTO>> getPostsByUserId(String userId) async {
     try {
       final snapshot = await _firestore
           .collection('posts')
           .where('userId', isEqualTo: userId)
           .get();
       return snapshot.docs
-          .map((doc) => PostResponseDTO.fromJson(doc.data(), doc.id))
+          .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
     } catch (e) {
       print(e);
