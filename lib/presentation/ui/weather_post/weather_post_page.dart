@@ -1,8 +1,10 @@
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/presentation/ui/widgets/post_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:drawee/constant/colors.dart';
-import 'package:drawee/domain/entities/post.dart';
+import 'package:drawee/presentation/providers/post_providers.dart';
 
 enum WeatherType {
   all,
@@ -30,60 +32,20 @@ enum WeatherType {
   }
 }
 
-class WeatherPostPage extends StatefulWidget {
+class WeatherPostPage extends ConsumerStatefulWidget {
   const WeatherPostPage({super.key});
 
   @override
-  State<WeatherPostPage> createState() => _WeatherPostPageState();
+  ConsumerState<WeatherPostPage> createState() => _WeatherPostPageState();
 }
 
-class _WeatherPostPageState extends State<WeatherPostPage> {
+class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
   WeatherType _selectedWeather = WeatherType.all;
-
-  // 샘플 데이터 수정
-  final List<Post> _samplePosts = [
-    Post(
-      postId: '1',
-      userId: "pJkzPGlKDskC9ixJCqfI",
-      content: "일기를 써보겠습니다. 두근두근",
-      createdAt: DateTime.parse("2024-12-27T14:38:40.079328"),
-      imageUrl: "https://picsum.photos/id/564/200/",
-      likes: 3,
-      title: "오늘의 그림 일기 704",
-      weather: "windy",
-      subjectId: "mpo4sBf7c4sgeqYaQnF4",
-      comments: [
-        Comment(
-          content: "행복하세요 ^^",
-          createdAt: DateTime.parse("2025-01-06T14:38:40.079265"),
-          userId: "T0xML1Y6xCjGL4be2pG2",
-        ),
-        Comment(
-          content: "행복하세요 ^^",
-          createdAt: DateTime.parse("2025-01-07T14:38:40.079282"),
-          userId: "pJkzPGlKDskC9ixJCqfI",
-        ),
-        Comment(
-          content: "행복하세요 ^^",
-          createdAt: DateTime.parse("2025-01-07T14:38:40.079311"),
-          userId: "duQXfjcgHD29HSCgmDFm",
-        ),
-      ],
-    ),
-  ];
-
-  // 현재 선택된 날씨에 따라 필터링된 포스트 목록을 반환
-  List<Post> get _filteredPosts {
-    if (_selectedWeather == WeatherType.all) {
-      return _samplePosts;
-    }
-    return _samplePosts
-        .where((post) => post.weather == _selectedWeather.name)
-        .toList();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final postsAsync = ref.watch(postViewModelProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('마음 날씨별 보기'),
@@ -117,6 +79,15 @@ class _WeatherPostPageState extends State<WeatherPostPage> {
                             setState(() {
                               _selectedWeather = weather;
                             });
+                            if (weather == WeatherType.all) {
+                              // 전체 선택 시 빈 배열 상태로 돌아감
+                              ref.read(postViewModelProvider.notifier).build();
+                            } else {
+                              // 특정 날씨 선택 시 해당 날씨의 포스트 로드
+                              ref
+                                  .read(postViewModelProvider.notifier)
+                                  .getPostsByWeather(weather.name);
+                            }
                           },
                           icon: SvgPicture.asset(
                             'assets/icon/${weather.name}.svg',
@@ -145,13 +116,26 @@ class _WeatherPostPageState extends State<WeatherPostPage> {
           ),
           const Divider(),
           Expanded(
-            child: ListView.builder(
-              itemCount: _filteredPosts.length,
-              itemBuilder: (context, index) {
-                return PostCard(
-                  post: _filteredPosts[index],
+            child: postsAsync.when(
+              data: (posts) {
+                if (posts.isEmpty) {
+                  return const Center(
+                    child: Text('포스트가 없습니다.'),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    return PostCard(post: posts[index]);
+                  },
                 );
               },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stack) => Center(
+                child: Text('Error: $error'),
+              ),
             ),
           ),
         ],

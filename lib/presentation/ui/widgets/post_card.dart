@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/domain/entities/post.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard extends ConsumerWidget {
   final Post post;
 
   const PostCard({
@@ -11,7 +12,7 @@ class PostCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       key: ValueKey(post.postId),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -39,6 +40,21 @@ class PostCard extends StatelessWidget {
             child: Image.network(
               post.imageUrl,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: double.infinity,
+                  height: 200,
+                  color: Colors.grey[300],
+                  child: const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 40),
+                      SizedBox(height: 8),
+                      Text('이미지를 불러올 수 없습니다'),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
           Padding(
