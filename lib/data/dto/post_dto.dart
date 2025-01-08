@@ -1,18 +1,18 @@
-import '../../domain/entities/post.dart';
+import 'package:drawee/domain/entities/post.dart';
 
-class CommentResponseDTO {
+class CommentDTO {
   final String content;
   final DateTime createdAt;
   final String userId;
 
-  CommentResponseDTO({
+  CommentDTO({
     required this.content,
     required this.createdAt,
     required this.userId,
   });
 
-  factory CommentResponseDTO.fromJson(Map<String, dynamic> json) {
-    return CommentResponseDTO(
+  factory CommentDTO.fromJson(Map<String, dynamic> json) {
+    return CommentDTO(
       content: json['content'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       userId: json['userId'] as String,
@@ -20,9 +20,9 @@ class CommentResponseDTO {
   }
 }
 
-class PostResponseDTO {
+class PostDTO {
   final String id;
-  final List<CommentResponseDTO> comments;
+  final List<CommentDTO> comments;
   final String content;
   final String userId;
   final String title;
@@ -32,7 +32,7 @@ class PostResponseDTO {
   final int likes;
   final DateTime createdAt;
 
-  PostResponseDTO({
+  PostDTO({
     required this.id,
     required this.comments,
     required this.content,
@@ -45,13 +45,12 @@ class PostResponseDTO {
     required this.createdAt,
   });
 
-  factory PostResponseDTO.fromJson(
-      Map<String, dynamic> json, String documentId) {
-    return PostResponseDTO(
+  factory PostDTO.fromJson(Map<String, dynamic> json, String documentId) {
+    return PostDTO(
       id: documentId,
       comments: (json['comments'] as List<dynamic>)
-          .map((comment) =>
-              CommentResponseDTO.fromJson(comment as Map<String, dynamic>))
+          .map(
+              (comment) => CommentDTO.fromJson(comment as Map<String, dynamic>))
           .toList(),
       content: json['content'] as String,
       userId: json['userId'] as String,
