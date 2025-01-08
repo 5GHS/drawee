@@ -43,23 +43,23 @@ class _MainLayoutState extends State<MainLayout> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '홈',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.cloud),
-            label: 'Weather',
+            label: '날씨별',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.edit),
-            label: 'Edit',
+            label: '글쓰기',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.subject),
-            label: 'Subject',
+            label: '주제별',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'My Page',
+            label: '마이페이지',
           ),
         ],
       ),
