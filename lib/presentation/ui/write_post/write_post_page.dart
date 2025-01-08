@@ -15,14 +15,44 @@ class _WritePageState extends State<WritePostPage> {
   final ImagePicker _picker = ImagePicker(); // 이미지 피커 인스턴스
 
   // 이미지 선택 함수
-  Future<void> _pickImage() async {
+  Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery); // 갤러리에서 이미지 선택
+        await _picker.pickImage(source: source); // 갤러리에서 선택 또는 사진 찍기 모두 지원하도록
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path); // 선택된 이미지 파일 상태 변수에 저장
       });
     }
+  }
+
+  // 갤러리 또는 카메라
+  Future<void> _showImageSourceDialog() async {
+    await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.photo),
+                  title: Text('갤러리에서 선택'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text('카메라로 촬영'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -49,7 +79,7 @@ class _WritePageState extends State<WritePostPage> {
                 Text('그림'),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: _pickImage,
+                  onTap: _showImageSourceDialog,
                   child: Container(
                     height: 360,
                     width: double.infinity,
