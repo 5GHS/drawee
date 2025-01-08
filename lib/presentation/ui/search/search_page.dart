@@ -66,7 +66,7 @@ class SearchPage extends StatelessWidget {
               ),
             ),
             const SizedBox(
-              height: 16,
+              height: 20,
             ),
             // 제목
             Text(
@@ -75,20 +75,32 @@ class SearchPage extends StatelessWidget {
               textEditingController.text == '' ? '오늘의 주제' : '검색 결과',
               style: const TextStyle(
                 fontFamily: 'Pretendard',
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
                 color: AppColors.black,
               ),
             ),
             // 검색 결과 리스트뷰
-            ListView.builder(
-              itemBuilder: (context, index) {
-                return Text(
-                  // 임시 데이터
-                  '#data',
-                  style: TextStyle(color: AppColors.green),
-                );
-              },
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      // 임시 데이터
+                      '#data',
+                      style: TextStyle(
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: AppColors.green,
+                      ),
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ),
