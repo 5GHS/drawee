@@ -1,9 +1,9 @@
-import 'package:drawee/firebase/auth/auth_service.dart';
+import 'package:drawee/data/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:drawee/data/data_resources/user_remote_data_source.dart'; // UserRemoteDataSource 파일 경로 필요
 
 class RegisterPage extends StatefulWidget {
   final User? user;
@@ -17,6 +17,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   String? _profileImage;
   final TextEditingController _nameController = TextEditingController();
+  final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource(); // UserRemoteDataSource 인스턴스 생성
 
   @override
   void initState() {
@@ -43,13 +44,14 @@ class _RegisterPageState extends State<RegisterPage> {
     String name = _nameController.text.trim();
 
     if (name.isNotEmpty) {
-      // Firebase Authentication과 Firestore에 사용자 정보 업데이트
       try {
-        await AuthService().updateUserProfile(name);
+        // UserRemoteDataSource를 통해 사용자 정보 업데이트
+        await _userRemoteDataSource.updateUserProfile(name); // UserRemoteDataSource 사용
 
-        // HomePage로 이동
-        Navigator.pushReplacementNamed(context, '/home');
+        // 성공적으로 업데이트 후 화면을 닫고 홈 화면으로 이동
+        Navigator.pop(context); // 또는 Navigator.pushReplacementNamed(context, '/home');
       } catch (e) {
+        // Firebase 호출 중 에러 처리
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('회원가입 중 오류가 발생했습니다: $e')),
         );
@@ -65,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // 회원가입 배경색 흰색
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('회원가입'),
         backgroundColor: Colors.white,
@@ -79,16 +81,16 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 32), // 상단 여백
+                const SizedBox(height: 32),
                 // 프로필 사진
                 GestureDetector(
                   onTap: _selectProfileImage,
                   child: CircleAvatar(
-                    radius: 30, // 60x60 크기 (반지름 30)
+                    radius: 60,  // 크기 변경 (반지름 30 -> 60으로 변경)
                     backgroundColor: Colors.grey[300],
                     backgroundImage: _profileImage != null
-                        ? (_profileImage!.startsWith('http') // 구글 프로필인지 확인
-                            ? NetworkImage(_profileImage!)
+                        ? (_profileImage!.startsWith('http') 
+                            ? NetworkImage(_profileImage!) 
                             : FileImage(File(_profileImage!))) as ImageProvider
                         : null,
                     child: _profileImage == null
@@ -100,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         : null,
                   ),
                 ),
-                const SizedBox(height: 16), // 여백
+                const SizedBox(height: 16),
                 // 이름 라벨
                 Align(
                   alignment: Alignment.centerLeft,
@@ -113,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8), // 여백
+                const SizedBox(height: 8),
                 // 이름 입력란
                 TextField(
                   controller: _nameController,
@@ -126,7 +128,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
             ),
           ),
-          // 회원가입 완료 버튼 (화면 하단 고정)
           Positioned(
             bottom: 16,
             left: 16,
@@ -136,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: ElevatedButton(
                 onPressed: _completeRegistration,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6BCF97), // 버튼 배경색
+                  backgroundColor: const Color(0xFF6BCF97),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

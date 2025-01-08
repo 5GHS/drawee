@@ -4,7 +4,8 @@ import 'package:drawee/presentation/ui/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase/auth/auth_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drawee/presentation/screens/user_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
