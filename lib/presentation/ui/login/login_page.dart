@@ -4,13 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:drawee/presentation/ui/register/register_page.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginPage extends StatelessWidget {
+// Riverpod provider 설정
+final appUserRepositoryProvider = Provider<AppUserRepository>((ref) {
+  // 실제 구현으로 대체 필요
+  return AppUserRepositoryImpl();
+});
+
+AppUserRepositoryImpl() {
+}
+
+class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
   // 구글 로그인 함수
-  Future<User?> signInWithGoogle(BuildContext context) async {
+  Future<User?> signInWithGoogle(BuildContext context, WidgetRef ref) async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -31,26 +40,30 @@ class LoginPage extends StatelessWidget {
 
       // 로그인 성공 시 RegisterPage로 이동
       if (userCredential.user != null) {
-  final appUserRepository = Provider.of<AppUserRepository>(context, listen: false);
-  final saveUserUseCase = SaveUserUseCase(appUserRepository);
+        final appUserRepository = ref.read(appUserRepositoryProvider); // riverpod에서 provider 접근
+        final saveUserUseCase = SaveUserUseCase(appUserRepository);
 
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (context) => RegisterPage(saveUserUseCase: saveUserUseCase),
-    ),
-  );
-}
+        print("User logged in: ${userCredential.user!.email}");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RegisterPage(saveUserUseCase: saveUserUseCase),
+          ),
+        );
+      }
 
       return userCredential.user;
     } catch (e) {
       print('Google Sign-In Error: $e');
-      return null;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그인 실패: $e')),
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: const Color(0xFF6BCF97), // 배경색 설정
       body: Column(
@@ -119,7 +132,7 @@ class LoginPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      signInWithGoogle(context);  // 로그인 후 페이지 이동
+                      signInWithGoogle(context, ref);  // 로그인 후 페이지 이동
                     },
                     icon: Image.asset(
                       'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
