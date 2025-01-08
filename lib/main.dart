@@ -48,9 +48,5 @@ class MyApp extends StatelessWidget {
       ),
       home: const MainLayout(),
     );
-    // return MaterialApp(
-    //   title: 'drawee',
-    //   home: SearchPage(),
-    // );
   }
 }
