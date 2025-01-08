@@ -55,7 +55,7 @@ class _WritePageState extends State<WritePostPage> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: _image == null
                         ? Center(
@@ -68,7 +68,7 @@ class _WritePageState extends State<WritePostPage> {
                                 Text('저희가 깔끔한 라인아트로 변경해 드려요!'),
                               ]))
                         : ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(20),
                             child: Image.file(_image!, fit: BoxFit.cover)),
                   ),
                 ),
@@ -92,7 +92,7 @@ class _WritePageState extends State<WritePostPage> {
                 ),
                 SizedBox(height: 10),
                 ElevatedButton(onPressed: () {}, child: Text("일기 업로드")),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
               ],
             ),
           ),
