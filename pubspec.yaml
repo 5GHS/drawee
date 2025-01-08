@@ -17,6 +17,9 @@ dependencies:
   google_sign_in: ^6.2.2
   firebase_auth: ^5.3.4
   flutter_riverpod: ^2.6.1
+  algoliasearch: ^1.28.3
+  convert: ^3.1.2
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
