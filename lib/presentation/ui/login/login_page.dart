@@ -1,7 +1,10 @@
+import 'package:drawee/domain/repositories/user_repository.dart';
+import 'package:drawee/domain/usecases/save_user_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:drawee/presentation/ui/register/register_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -28,11 +31,16 @@ class LoginPage extends StatelessWidget {
 
       // 로그인 성공 시 RegisterPage로 이동
       if (userCredential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const RegisterPage()),
-        );
-      }
+  final appUserRepository = Provider.of<AppUserRepository>(context, listen: false);
+  final saveUserUseCase = SaveUserUseCase(appUserRepository);
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => RegisterPage(saveUserUseCase: saveUserUseCase),
+    ),
+  );
+}
 
       return userCredential.user;
     } catch (e) {

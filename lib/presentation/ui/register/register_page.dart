@@ -1,14 +1,19 @@
-import 'package:drawee/data/repositories/user_repository.dart';
+import 'package:drawee/domain/usecases/save_user_usecase.dart';
+import 'package:drawee/domain/entities/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:drawee/data/data_resources/user_remote_data_source.dart'; // UserRemoteDataSource 파일 경로 필요
 
 class RegisterPage extends StatefulWidget {
   final User? user;
+  final SaveUserUseCase saveUserUseCase;
 
-  const RegisterPage({super.key, this.user});
+  const RegisterPage({
+    super.key,
+    this.user,
+    required this.saveUserUseCase, // UseCase 주입
+  });
 
   @override
   _RegisterPageState createState() => _RegisterPageState();
@@ -17,7 +22,6 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   String? _profileImage;
   final TextEditingController _nameController = TextEditingController();
-  final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource(); // UserRemoteDataSource 인스턴스 생성
 
   @override
   void initState() {
@@ -40,18 +44,25 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // 회원가입 완료 함수
-  void _completeRegistration() async {
+  Future<void> _completeRegistration() async {
     String name = _nameController.text.trim();
 
     if (name.isNotEmpty) {
       try {
-        // UserRemoteDataSource를 통해 사용자 정보 업데이트
-        await _userRemoteDataSource.updateUserProfile(name); // UserRemoteDataSource 사용
+        // AppUser 엔티티 생성
+        final appUser = AppUser(
+          id: widget.user!.uid,
+          name: name,
+          profile: _profileImage ?? '',
+        );
 
-        // 성공적으로 업데이트 후 화면을 닫고 홈 화면으로 이동
+        // UseCase를 통해 사용자 정보 저장
+        await widget.saveUserUseCase.saveUser(appUser);
+
+        // 성공적으로 저장 후 화면을 닫고 홈 화면으로 이동
         Navigator.pop(context); // 또는 Navigator.pushReplacementNamed(context, '/home');
       } catch (e) {
-        // Firebase 호출 중 에러 처리
+        // 저장 중 에러 처리
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('회원가입 중 오류가 발생했습니다: $e')),
         );
@@ -86,11 +97,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 GestureDetector(
                   onTap: _selectProfileImage,
                   child: CircleAvatar(
-                    radius: 60,  // 크기 변경 (반지름 30 -> 60으로 변경)
+                    radius: 60,
                     backgroundColor: Colors.grey[300],
                     backgroundImage: _profileImage != null
-                        ? (_profileImage!.startsWith('http') 
-                            ? NetworkImage(_profileImage!) 
+                        ? (_profileImage!.startsWith('http')
+                            ? NetworkImage(_profileImage!)
                             : FileImage(File(_profileImage!))) as ImageProvider
                         : null,
                     child: _profileImage == null

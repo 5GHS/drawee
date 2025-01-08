@@ -1,10 +1,9 @@
-import 'package:drawee/domain/entities/user_entity.dart';
-import 'package:drawee/data/dto/user_dto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:drawee/domain/entities/user.dart';
 
+abstract interface class AppUserRepository {
+  Future<AppUser?> fetchUser(String id);
 
-abstract class UserRepository {
-  Future<User?> getCurrentUser();
-  Future<UserDTO> fetchUserData(String uid);
-  Future<UserDTO?> updateUserProfile(String uid, String name);
+  Future<void> saveUser(AppUser user);
+
+  Future<void> updateUser(AppUser user);
 }

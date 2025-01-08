@@ -1,36 +1,40 @@
-class UserDTO {
-  final String uid;
-  final String name;
-  final String imgUrl;
-  final List<String> likedPostsIds;
-  final List<String> writtenPostIds;
+import 'dart:convert';
 
-  UserDTO({
-    required this.uid,
+class UserDto {
+  final String id;
+  final String name;
+  final String profile;
+
+  UserDto({
+    required this.id,
     required this.name,
-    required this.imgUrl,
-    required this.likedPostsIds,
-    required this.writtenPostIds,
+    required this.profile,
   });
 
-  // Firestore에서 가져온 데이터를 DTO로 변환
-  factory UserDTO.fromFirestore(Map<String, dynamic> data, String uid) {
-    return UserDTO(
-      uid: uid,
-      name: data['name'] ?? 'Unknown User',
-      imgUrl: data['imgUrl'] ?? '',
-      likedPostsIds: List<String>.from(data['likedPostsIds'] ?? []),
-      writtenPostIds: List<String>.from(data['writtenPostIds'] ?? []),
-    );
-  }
+  UserDto copyWith({
+    String? id,
+    String? name,
+    String? profile,
+  }) =>
+      UserDto(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        profile: profile ?? this.profile,
+      );
 
-  // DTO에서 Firestore에 저장할 데이터로 변환
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'imgUrl': imgUrl,
-      'likedPostsIds': likedPostsIds,
-      'writtenPostIds': writtenPostIds,
-    };
-  }
+  factory UserDto.fromRawJson(String str) => UserDto.fromJson(json.decode(str));
+
+  String toRawJson() => json.encode(toJson());
+
+  factory UserDto.fromJson(Map<String, dynamic> json) => UserDto(
+        id: json["id"],
+        name: json["name"],
+        profile: json["profile"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "profile": profile,
+      };
 }
