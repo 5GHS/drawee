@@ -19,15 +19,11 @@ class AlgoliaSubjectDataSource implements SubjectDataSource {
         hitsPerPage: 10,
       );
 
-      final response = await _client.searchIndex(request: queryHits);
+      final snapshot = await _client.searchIndex(request: queryHits);
 
-      if (response.hits.isNotEmpty) {
-        final iterable = List.from(response.hits)
-            .map((element) => SubjectDTO.fromJson(element));
-        return iterable.toList();
-      }
-      return [];
+      return snapshot.hits.map((hit) => SubjectDTO.fromJson(hit)).toList();
     } catch (e) {
+      print(e);
       return [];
     }
   }
