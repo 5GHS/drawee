@@ -13,6 +13,6 @@ final _subjectRepositoryProvider = Provider<SubjectRepository>((ref) {
   return SubjectRepositoryImpl(ref.watch(_subjectDataSourceProvider));
 });
 
-final _getSubjectsUsecaseProvider = Provider<GetSubjectsUsecase>((ref) {
+final getSubjectsUsecaseProvider = Provider<GetSubjectsUsecase>((ref) {
   return GetSubjectsUsecase(ref.watch(_subjectRepositoryProvider));
 });
