@@ -1,8 +1,8 @@
-import 'package:drawee/data/repositories/user_repository.dart';
-import 'package:drawee/presentation/ui/home/home_page.dart';
+import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/layout/main_layout.dart';
+import 'package:drawee/core/utils/firestore_utils.dart';
 import 'package:drawee/presentation/ui/login/login_page.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
-import 'package:drawee/core/utils/firestore_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,9 +10,6 @@ import 'package:drawee/firebase_options.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/domain/repositories/user_repository.dart';
 
-final appUserRepositoryProvider = Provider<AppUserRepository>((ref) {
-  return AppUserRepositoryImpl(); // data 레이어 구현체 사용
-});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +17,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // * 데이터 추가할때 사용하세요
+  // await getFirestoreDocument(
+  //   collectionPath: 'posts',
+  //   documentId: '0MYZlzCIzmmyZvJfhmLi',
+  // );
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -32,15 +34,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'drawee',
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Pretendard',
+        scaffoldBackgroundColor: AppColors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.white,
+          foregroundColor: AppColors.black,
+          elevation: 0,
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: AppColors.white,
+          elevation: 0,
+        ),
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashPage(),
         '/login': (context) => const LoginPage(),
-        '/home': (context) => HomePage(),
-      },
+        '/home': (context) => MainLayout(),
+      }, 
+      home: const MainLayout(),
     );
   }
 }
