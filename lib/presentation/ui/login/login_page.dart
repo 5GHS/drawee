@@ -1,14 +1,59 @@
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/layout/main_layout.dart';
+import 'package:drawee/presentation/ui/register/register_page.dart';
+import 'package:drawee/presentation/viewmodels/auth_view_model.dart';
+import 'package:drawee/presentation/viewmodels/user_view_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authViewModel = ref.read(authViewModelProvider.notifier);
+    final userViewModel = ref.read(userViewModelProvider.notifier);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        return;
+      }
+
+      try {
+        await userViewModel.getUser(currentUser.uid);
+        final userState = ref.read(userViewModelProvider);
+
+        userState.when(
+          data: (userState) {
+            if (userState.user == null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MainLayout()),
+              );
+            }
+          },
+          error: (error, stack) {
+            print(error);
+          },
+          loading: () {
+            print("로딩중...");
+          },
+        );
+      } catch (e) {
+        print(e);
+      }
+    });
+
     return Scaffold(
-      backgroundColor: AppColors.green, // 배경색 설정
+      backgroundColor: AppColors.green,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -56,9 +101,37 @@ class LoginPage extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await authViewModel.signInGoogle();
+                      final currentUser = FirebaseAuth.instance.currentUser;
+                      if (currentUser != null) {
+                        await userViewModel.getUser(currentUser.uid);
+                        final userState = ref.read(userViewModelProvider);
+                        userState.when(
+                          data: (data) {
+                            if (data.user == null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const RegisterPage()),
+                              );
+                            } else {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MainLayout()),
+                              );
+                            }
+                          },
+                          error: (error, stackTrace) {
+                            print(error);
+                          },
+                          loading: () => print("로딩중..."),
+                        );
+                      }
+                    },
                     icon: Image.asset(
-                      'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
+                      'assets/icon/google_icon.png',
                       width: 24,
                       height: 24,
                     ),
@@ -77,33 +150,6 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                // 애플 로그인 버튼
-                // SizedBox(
-                //   width: double.infinity,
-                //   height: 50,
-                //   child: ElevatedButton.icon(
-                //     onPressed: () {
-                //       // TODO: 애플 로그인 구현
-                //     },
-                //     icon: const Icon(
-                //       Icons.apple,
-                //       color: Colors.white,
-                //       size: 24,
-                //     ),
-                //     label: const Text(
-                //       '애플 로그인',
-                //       style: TextStyle(color: Colors.white),
-                //     ),
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: Colors.black,
-                //       elevation: 0,
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(8),
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
