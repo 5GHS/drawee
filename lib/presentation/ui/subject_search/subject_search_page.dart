@@ -10,7 +10,8 @@ class SubjectSearchPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController textEditingController = TextEditingController();
+    //TextEditingController textEditingController = TextEditingController();
+
     final viewModel = ref.watch(subjectViewModelProvider.notifier);
     viewModel.build();
     final subjectsAsync = ref.watch(subjectViewModelProvider);
@@ -79,52 +80,67 @@ class SubjectSearchPage extends ConsumerWidget {
             const SizedBox(
               height: 20,
             ),
-            // 제목
-            Text(
-              // 우선 bool로 처리했지만
-              // 뷰모델에서 검색 결과가 없으면 오늘의 주제 띄우게 설정
-              textEditingController.text == '' ? '오늘의 주제' : '검색 결과',
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: 18,
-                color: AppColors.black,
-              ),
-            ),
             // 검색 결과 리스트뷰
-            Expanded(
-              child: subjectsAsync.when(
-                data: (subjects) {
-                  if (subjects.isNotEmpty) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      itemCount: subjects.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Text(
-                            // 임시 데이터
-                            subjects[index].topic,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: AppColors.green,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-                error: (error, stack) {
-                  return Text('error');
-                },
-                loading: () {
-                  return Text('loading');
-                },
-              ),
-            )
+            subjectsAsync.when(
+              data: (subjects) {
+                if (subjects.isNotEmpty) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '검색 결과',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: AppColors.black,
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 500,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          itemCount: subjects.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Text(
+                                // 임시 데이터
+                                '# ${subjects[index].topic}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  color: AppColors.green,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Column(
+                    children: [
+                      const Text(
+                        '오늘의 주제',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: AppColors.black,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+              error: (error, stack) {
+                return Text('error');
+              },
+              loading: () {
+                return Text('loading');
+              },
+            ),
           ],
         ),
       ),
