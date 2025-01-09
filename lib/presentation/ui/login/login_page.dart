@@ -17,7 +17,7 @@ class LoginPage extends StatelessWidget {
           const Spacer(),
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(20.0),
+            margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
             decoration: BoxDecoration(
