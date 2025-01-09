@@ -45,6 +45,7 @@ async function setRecommendSubjectsData() {
 
 // recommend_subject 컬렉션을 algolia index에 업데이트
 async function setSubjectsData() {
+  initializeApp();
   const recordCollection = [];
 
   const index = client.initIndex("subjects");
@@ -57,6 +58,7 @@ async function setSubjectsData() {
       snapshot.forEach((element) => {
         const record = {
           topic: element.data().topic,
+          postsIds: element.data().postsIds,
         };
         recordCollection.push(record);
       });
