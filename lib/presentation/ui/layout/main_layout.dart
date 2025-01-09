@@ -1,3 +1,4 @@
+import 'package:drawee/presentation/ui/write_post/write_post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/home/home_page.dart';
@@ -18,7 +19,7 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = [
     HomePage(),
     const WeatherPostPage(),
-    const WeatherPostPage(), // TODO : 임시로 WeatherPostPage 사용 -> 추후 수정
+    const WritePostPage(),
     const SubjectPostPage(),
     const MypagePage(),
   ];

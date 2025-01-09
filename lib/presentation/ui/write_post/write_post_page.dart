@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/section_title.dart';
+import 'package:drawee/presentation/ui/write_post/widgets/weather_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
@@ -28,8 +30,8 @@ class _WritePageState extends State<WritePostPage> {
       throw Exception('이미지를 불러올 수 없습니다');
     }
 
-    final img.Image grayscale = img.grayscale(image); // 그레이스케일
-    final img.Image sobel = img.sobel(grayscale); // 소벨 필터 적용
+    //final img.Image grayscale = img.grayscale(image); // 그레이스케일
+    final img.Image sobel = img.sobel(image); // 소벨 필터 적용
     final img.Image inverted = img.invert(sobel); // 흰색과 검은색 반전
     //final img.Image blurred = img.gaussianBlur(inverted, radius: 2); // 블러 처리는 의미가 별로 없구만
 
@@ -111,7 +113,7 @@ class _WritePageState extends State<WritePostPage> {
                       filled: true,
                       fillColor: AppColors.lightGray,
                       border: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.gray),
+                          borderSide: BorderSide(color: AppColors.lightGray),
                           borderRadius: BorderRadius.circular(20)),
                       contentPadding: EdgeInsets.symmetric(horizontal: 19),
                       suffixIcon: IconButton(
@@ -122,20 +124,48 @@ class _WritePageState extends State<WritePostPage> {
                           print('주제 검색!');
                         },
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: AppColors.lightGray,
+                            width: 1.0), // 비활성 상태 테두리
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: AppColors.green, width: 1.0), // 활성 상태 테두리
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 16),
                 SectionTitle(text: '날씨'),
                 SizedBox(height: 16),
-                Row(
-                  children: [
-                    IconButton(icon: Icon(Icons.wb_sunny), onPressed: () {}),
-                    IconButton(icon: Icon(Icons.cloud), onPressed: () {}),
-                    IconButton(icon: Icon(Icons.wb_cloudy), onPressed: () {}),
-                    IconButton(icon: Icon(Icons.ac_unit), onPressed: () {}),
-                    IconButton(icon: Icon(Icons.grain), onPressed: () {}),
-                  ],
+                Container(
+                  height: 52,
+                  child: Row(
+                    children: [
+                      weatherButton(
+                        weather: 'sunny',
+                      ),
+                      SizedBox(width: 14),
+                      weatherButton(
+                        weather: 'rainy',
+                      ),
+                      SizedBox(width: 14),
+                      weatherButton(
+                        weather: 'cloudy',
+                      ),
+                      SizedBox(width: 14),
+                      weatherButton(
+                        weather: 'windy',
+                      ),
+                      SizedBox(width: 14),
+                      weatherButton(
+                        weather: 'snowy',
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 16),
                 SectionTitle(text: '그림'),
