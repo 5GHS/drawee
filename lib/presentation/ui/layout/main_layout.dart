@@ -4,6 +4,7 @@ import 'package:drawee/presentation/ui/home/home_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
 import 'package:drawee/presentation/ui/subject_post/subject_post_page.dart';
 import 'package:drawee/presentation/ui/mypage/mypage_page.dart';
+import 'package:flutter_svg/svg.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -40,25 +41,45 @@ class _MainLayoutState extends State<MainLayout> {
             _selectedIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: _selectedIndex == 0
+                ? SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/home_selected.svg')
+                : SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/home.svg'),
             label: '홈',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
+            icon: _selectedIndex == 1
+                ? SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/weather_selected.svg')
+                : SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/weather.svg'),
             label: '날씨별',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
+            icon: _selectedIndex == 2
+                ? SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/write_selected.svg')
+                : SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/write.svg'),
             label: '글쓰기',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.subject),
+            icon: _selectedIndex == 3
+                ? SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/subject_selected.svg')
+                : SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/subject.svg'),
             label: '주제별',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: _selectedIndex == 4
+                ? SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/profile_selected.svg')
+                : SvgPicture.asset(
+                    'assets/icon/bottom_navigation_icons/profile.svg'),
             label: '마이페이지',
           ),
         ],
