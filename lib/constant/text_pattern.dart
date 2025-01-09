@@ -1,1 +1,1 @@
-RegExp textPattern = RegExp(r'^[가-힣]*$');
+RegExp textPattern = RegExp(r'^[가-힣]$');
