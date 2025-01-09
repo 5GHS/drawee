@@ -14,29 +14,25 @@ const { getFirestore } = require("firebase-admin/firestore");
 const ALGOLIA_APP_ID = "H464EGHSBZ";
 const ALGOLIA_API_KEY = "66cc719f55dc615b4e37378adfe04ff8";
 const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
-console.log(typeof client.initIn);
 const index = client.initIndex("subjects");
 
 // recommend_subject 컬렉션을 algolia index에 업데이트
 async function setRecommendSubjectData() {
   initializeApp();
-  const recordCollection = [];
 
   const firestore = admin.firestore();
   const firestoreCollection = await firestore.collection("recommend_subjects");
 
   try {
-    const snapshot = await firestoreCollection.get();
+    const snapshot = await firestoreCollection.doc("recommend").get();
     if (!!snapshot) {
-      snapshot.forEach((element) => {
-        const record = {
-          todayIdx: element.data().todayIdx,
-          subjectId: element.data().subjectId,
-        };
-        recordCollection.push(record);
-      });
+      console.log(snapshot.data());
+      const record = {
+        todayIdx: snapshot.data().todayIdx,
+        subjectId: snapshot.data().subjectId,
+      };
       await index
-        .saveObjects(recordCollection, { autoGenerateObjectIDIfNotExist: true })
+        .saveObjects([record], { autoGenerateObjectIDIfNotExist: true })
         .wait();
     }
   } catch (e) {
