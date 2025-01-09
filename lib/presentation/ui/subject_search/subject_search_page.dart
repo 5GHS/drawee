@@ -52,7 +52,8 @@ class SubjectSearchPage extends ConsumerWidget {
                           hintStyle: TextStyle(color: AppColors.darkGray),
                         ),
                         onChanged: (query) {
-                          if (query.trim().isNotEmpty) {
+                          if (query.trim().isNotEmpty &&
+                              textPattern.hasMatch(query)) {
                             viewModel.getSubjects(query);
                           }
                         },
