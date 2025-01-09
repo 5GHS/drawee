@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
         final appUser = AppUser(
           id: widget.user!.uid,
           name: name,
-          profile: _profileImage ?? '',
+          profile: _profileImage ?? '', email: null,
         );
 
         // UseCase를 통해 사용자 정보 저장

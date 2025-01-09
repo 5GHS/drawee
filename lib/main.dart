@@ -1,3 +1,4 @@
+import 'package:drawee/data/repositories/user_repository.dart';
 import 'package:drawee/presentation/ui/home/home_page.dart';
 import 'package:drawee/presentation/ui/login/login_page.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
@@ -8,6 +9,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:drawee/firebase_options.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/domain/repositories/user_repository.dart';
+
+final appUserRepositoryProvider = Provider<AppUserRepository>((ref) {
+  return AppUserRepositoryImpl(); // data 레이어 구현체 사용
+});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

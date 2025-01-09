@@ -8,7 +8,7 @@ class AppUser {
   AppUser({
     required this.id,
     required this.name,
-    required this.profile,
+    required this.profile, required email,
   });
 
   AppUser copyWith({
@@ -19,7 +19,7 @@ class AppUser {
       AppUser(
         id: id ?? this.id,
         name: name ?? this.name,
-        profile: profile ?? this.profile,
+        profile: profile ?? this.profile, email: null,
       );
 
   factory AppUser.fromRawJson(String str) => AppUser.fromJson(json.decode(str));
@@ -29,8 +29,10 @@ class AppUser {
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
         id: json["id"],
         name: json["name"],
-        profile: json["profile"],
+        profile: json["profile"], email: null,
       );
+
+  get email => null;
 
   Map<String, dynamic> toJson() => {
         "id": id,

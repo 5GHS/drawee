@@ -1,3 +1,4 @@
+import 'package:drawee/data/repositories/user_repository.dart';
 import 'package:drawee/domain/repositories/user_repository.dart';
 import 'package:drawee/domain/usecases/save_user_usecase.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Riverpod provider 설정
 final appUserRepositoryProvider = Provider<AppUserRepository>((ref) {
-  // 실제 구현으로 대체 필요
-  return AppUserRepositoryImpl();
+  return AppUserRepositoryImpl(); // 실제 구현체 반환
 });
-
-AppUserRepositoryImpl() {
-}
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -40,7 +37,7 @@ class LoginPage extends ConsumerWidget {
 
       // 로그인 성공 시 RegisterPage로 이동
       if (userCredential.user != null) {
-        final appUserRepository = ref.read(appUserRepositoryProvider); // riverpod에서 provider 접근
+        final appUserRepository = ref.read(appUserRepositoryProvider); // Provider에서 구현체 접근
         final saveUserUseCase = SaveUserUseCase(appUserRepository);
 
         print("User logged in: ${userCredential.user!.email}");
@@ -57,8 +54,9 @@ class LoginPage extends ConsumerWidget {
     } catch (e) {
       print('Google Sign-In Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('로그인 실패: $e')),
+        const SnackBar(content: Text('로그인에 실패했습니다. 다시 시도해주세요.')),
       );
+      return null;
     }
   }
 
@@ -132,7 +130,7 @@ class LoginPage extends ConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      signInWithGoogle(context, ref);  // 로그인 후 페이지 이동
+                      signInWithGoogle(context, ref); // 로그인 후 페이지 이동
                     },
                     icon: Image.asset(
                       'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
