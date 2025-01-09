@@ -1,6 +1,6 @@
 import 'package:drawee/add_mock_data.dart';
 import 'package:drawee/presentation/ui/home/home_page.dart';
-import 'package:drawee/presentation/ui/search/search_page.dart';
+import 'package:drawee/presentation/ui/subject_search/subject_search_page.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
 import 'package:drawee/constant/colors.dart';
