@@ -2,6 +2,8 @@ import 'package:drawee/presentation/ui/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
@@ -18,15 +20,14 @@ class SplashPageState extends State<SplashPage>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
       vsync: this,
     )..forward();
 
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
 
-    // Navigate to LoginPage after 3 seconds
     Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
@@ -48,12 +49,7 @@ class SplashPageState extends State<SplashPage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/icon/logo_icon.png', width: 200, height: 200),
-              const SizedBox(height: 20),
-              const Text(
-                'drawee',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
+              SvgPicture.asset('assets/images/splash_logo.svg'),
             ],
           ),
         ),
