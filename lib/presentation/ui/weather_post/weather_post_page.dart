@@ -1,13 +1,144 @@
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drawee/presentation/ui/widgets/post_card.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/providers/post_providers.dart';
 
-class WeatherPostPage extends StatelessWidget {
+enum WeatherType {
+  all,
+  sunny,
+  rainy,
+  cloudy,
+  windy,
+  snowy;
+
+  String get label {
+    switch (this) {
+      case WeatherType.all:
+        return '전체';
+      case WeatherType.sunny:
+        return '맑음';
+      case WeatherType.rainy:
+        return '비';
+      case WeatherType.cloudy:
+        return '구름';
+      case WeatherType.windy:
+        return '바람';
+      case WeatherType.snowy:
+        return '눈';
+    }
+  }
+}
+
+class WeatherPostPage extends ConsumerStatefulWidget {
   const WeatherPostPage({super.key});
 
   @override
+  ConsumerState<WeatherPostPage> createState() => _WeatherPostPageState();
+}
+
+class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
+  WeatherType _selectedWeather = WeatherType.all;
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Weather Post Page'),
+    final postsAsync = ref.watch(postViewModelProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('마음 날씨별 보기'),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: WeatherType.values.length,
+              itemBuilder: (context, index) {
+                final weather = WeatherType.values[index];
+                final isSelected = _selectedWeather == weather;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected
+                              ? AppColors.green
+                              : AppColors.lightGray,
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedWeather = weather;
+                            });
+                            if (weather == WeatherType.all) {
+                              // 전체 선택 시 빈 배열 상태로 돌아감
+                              ref.read(postViewModelProvider.notifier).build();
+                            } else {
+                              // 특정 날씨 선택 시 해당 날씨의 포스트 로드
+                              ref
+                                  .read(postViewModelProvider.notifier)
+                                  .getPostsByWeather(weather.name);
+                            }
+                          },
+                          icon: SvgPicture.asset(
+                            'assets/icon/${weather.name}.svg',
+                            colorFilter: ColorFilter.mode(
+                              isSelected ? AppColors.white : AppColors.darkGray,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        weather.label,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isSelected ? AppColors.green : AppColors.black,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          const Divider(),
+          Expanded(
+            child: postsAsync.when(
+              data: (posts) {
+                if (posts.isEmpty) {
+                  return const Center(
+                    child: Text('포스트가 없습니다.'),
+                  );
+                }
+                return ListView.builder(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    return PostCard(post: posts[index]);
+                  },
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stack) => Center(
+                child: Text('Error: $error'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
