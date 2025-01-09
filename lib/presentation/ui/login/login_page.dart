@@ -1,115 +1,137 @@
-import 'package:flutter/material.dart';
+import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/layout/main_layout.dart';
+import 'package:drawee/presentation/ui/register/register_page.dart';
+import 'package:drawee/presentation/viewmodels/auth_view_model.dart';
+import 'package:drawee/presentation/viewmodels/user_view_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
-  // 구글 로그인 함수
-  Future<User?> signInWithGoogle() async {
-    try {
-      // 구글 로그인 시도
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authViewModel = ref.read(authViewModelProvider.notifier);
+    final userViewModel = ref.read(userViewModelProvider.notifier);
 
-      if (googleUser == null) {
-        return null; // 로그인 취소 시 null 반환
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        return;
       }
 
-      // 구글 인증을 통해 인증 토큰을 가져옴
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      try {
+        await userViewModel.getUser(currentUser.uid);
+        final userState = ref.read(userViewModelProvider);
 
-      // Firebase에 인증 정보 전달하여 Firebase Auth 로그인
-      final OAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        userState.when(
+          data: (userState) {
+            if (userState.user == null) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const RegisterPage()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MainLayout()),
+              );
+            }
+          },
+          error: (error, stack) {
+            print(error);
+          },
+          loading: () {
+            print("로딩중...");
+          },
+        );
+      } catch (e) {
+        print(e);
+      }
+    });
 
-      // Firebase 인증
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      return userCredential.user;
-    } catch (e) {
-      print('Google Sign-In Error: $e');
-      return null;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF6BCF97), // 배경색 설정
+      backgroundColor: AppColors.green,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Spacer(),
-          const Icon(
-            Icons.tag, // 상단 로고나 아이콘
-            size: 100,
-            color: Colors.white,
-          ),
+          SvgPicture.asset('assets/images/login_page_logo.svg'),
           const Spacer(),
           Container(
             width: double.infinity,
-            margin: const EdgeInsets.all(16.0),
-            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(30),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6BCF97), // 녹색 배경
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'd', // 아이콘 내부 텍스트
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white, // 흰색 텍스트
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                    SvgPicture.asset('assets/images/login_page_small_logo.svg'),
+                    const SizedBox(height: 16),
                     const Text(
                       '로그인해서 시작하기',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: AppColors.black,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 const Text(
-                  '추억의 그림일기 SNS drawee를 이용하시려면 로그인이 필요합니다.',
+                  '추억의 그림일기 SNS drawee를 이용하시려면\n로그인이 필요합니다.',
                   style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
+                    fontSize: 16,
+                    color: AppColors.darkGray,
                   ),
                 ),
                 const SizedBox(height: 16),
                 // 구글 로그인 버튼
                 SizedBox(
                   width: double.infinity,
+                  height: 50,
                   child: ElevatedButton.icon(
-                    onPressed: () {
-                      signInWithGoogle();
+                    onPressed: () async {
+                      await authViewModel.signInGoogle();
+                      final currentUser = FirebaseAuth.instance.currentUser;
+                      if (currentUser != null) {
+                        await userViewModel.getUser(currentUser.uid);
+                        final userState = ref.read(userViewModelProvider);
+                        userState.when(
+                          data: (data) {
+                            if (data.user == null) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const RegisterPage()),
+                              );
+                            } else {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MainLayout()),
+                              );
+                            }
+                          },
+                          error: (error, stackTrace) {
+                            print(error);
+                          },
+                          loading: () => print("로딩중..."),
+                        );
+                      }
                     },
                     icon: Image.asset(
-                      'assets/icon/google_icon.png', // 구글 아이콘 이미지 경로
+                      'assets/icon/google_icon.png',
                       width: 24,
                       height: 24,
                     ),
@@ -122,34 +144,9 @@ class LoginPage extends StatelessWidget {
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Colors.grey),
+                        side: const BorderSide(color: AppColors.lightGray),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // 애플 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: 애플 로그인 구현
-                    },
-                    icon: const Icon(
-                      Icons.apple,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    label: const Text(
-                      '애플 로그인',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      splashFactory: NoSplash.splashFactory,
                     ),
                   ),
                 ),
