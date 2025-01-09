@@ -1,12 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/constant/text_pattern.dart';
+import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SubjectSearchPage extends StatelessWidget {
+class SubjectSearchPage extends ConsumerWidget {
   const SubjectSearchPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     TextEditingController textEditingController = TextEditingController();
+    final viewModel = ref.watch(subjectViewModelProvider.notifier);
+    viewModel.build();
+    final subjectsAsync = ref.watch(subjectViewModelProvider);
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -38,12 +45,16 @@ class SubjectSearchPage extends StatelessWidget {
                     // 텍스트필드
                     Flexible(
                       child: TextField(
-                        controller: textEditingController,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: '관심있는 주제를 검색해보세요',
                           hintStyle: TextStyle(color: AppColors.darkGray),
                         ),
+                        onChanged: (query) {
+                          if (query.trim().isNotEmpty) {
+                            viewModel.getSubjects(query);
+                          }
+                        },
                       ),
                     ),
                     // 검색 버튼
@@ -74,7 +85,6 @@ class SubjectSearchPage extends StatelessWidget {
               // 뷰모델에서 검색 결과가 없으면 오늘의 주제 띄우게 설정
               textEditingController.text == '' ? '오늘의 주제' : '검색 결과',
               style: const TextStyle(
-                fontFamily: 'Pretendard',
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
                 color: AppColors.black,
@@ -82,23 +92,36 @@ class SubjectSearchPage extends StatelessWidget {
             ),
             // 검색 결과 리스트뷰
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      // 임시 데이터
-                      '#data',
-                      style: TextStyle(
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        color: AppColors.green,
-                      ),
-                    ),
-                  );
+              child: subjectsAsync.when(
+                data: (subjects) {
+                  if (subjects.isNotEmpty) {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      itemCount: subjects.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Text(
+                            // 임시 데이터
+                            subjects[index].topic,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                              color: AppColors.green,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+                error: (error, stack) {
+                  return Text('error');
+                },
+                loading: () {
+                  return Text('loading');
                 },
               ),
             )
