@@ -1,7 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/domain/entities/post.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class PostCard extends ConsumerWidget {
   final Post post;
@@ -13,78 +16,140 @@ class PostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
+    return Container(
       key: ValueKey(post.postId),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            leading: const CircleAvatar(),
-            title: Text(post.userId),
-            subtitle: Text(_getTimeAgo(post.createdAt)),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_horiz),
-              onPressed: () {},
+            contentPadding: EdgeInsets.zero,
+            leading: const CircleAvatar(), // TODO: user Img 삽입 필요
+            title: Text(
+              post.userId, // TODO : user 이름 삽입 필요
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              post.title,
-              style: Theme.of(context).textTheme.titleMedium,
+            subtitle: Text(
+              _getTimeAgo(post.createdAt),
+              style: const TextStyle(fontSize: 12, color: AppColors.darkGray),
             ),
+            trailing: SvgPicture.asset('assets/icon/${post.weather}.svg'),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Image.network(
-              post.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
+          Stack(
+            children: [
+              // 배경 이미지
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  post.imageUrl,
                   width: double.infinity,
-                  height: 200,
-                  color: Colors.grey[300],
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.error_outline, size: 40),
-                      SizedBox(height: 8),
-                      Text('이미지를 불러올 수 없습니다'),
-                    ],
+                  height: 360,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: double.infinity,
+                      height: 360,
+                      color: Colors.grey[300],
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline, size: 40),
+                          SizedBox(height: 8),
+                          Text('이미지를 불러올 수 없습니다'),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              Positioned(
+                top: 16, // 위쪽 여백
+                left: 16, // 왼쪽 여백
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color:
+                            const Color.fromARGB(73, 247, 247, 247), // 대략 50%
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: const Color.fromARGB(
+                                75, 13, 187, 132)), // 대략 25%
+                      ),
+                      child: Text(
+                        "#${post.subjectId}", // TODO: 이것도 subject -> topic으로 변경 필요
+                        style: const TextStyle(
+                          color: AppColors.green,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              post.content,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+          const SizedBox(height: 12),
+          Text(
+            post.title,
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.black),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Row(
+          const SizedBox(height: 4),
+          Text(
+            post.content,
+            style: const TextStyle(fontSize: 14, color: AppColors.darkGray),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  // TODO: 좋아요 누르기 (메소드 추가 필요할듯)
+                },
+                child: Row(
                   children: [
-                    const Icon(Icons.favorite_border),
+                    SvgPicture.asset('assets/icon/stamp.svg'),
                     const SizedBox(width: 4),
-                    Text('${post.likes}'),
+                    Text(
+                      '${post.likes}',
+                      style: const TextStyle(
+                          fontSize: 14, color: AppColors.darkGray),
+                    ),
                   ],
                 ),
-                const SizedBox(width: 16),
-                Row(
+              ),
+              const SizedBox(width: 16),
+              GestureDetector(
+                onTap: () {
+                  // TODO: 댓글 페이지 이동
+                },
+                child: Row(
                   children: [
-                    const Icon(Icons.chat_bubble_outline),
+                    SvgPicture.asset('assets/icon/reply.svg'),
                     const SizedBox(width: 4),
-                    Text('${post.comments.length}'),
+                    Text(
+                      '${post.comments.length}',
+                      style: const TextStyle(
+                          fontSize: 14, color: AppColors.darkGray),
+                    ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(
+            height: 1,
+            color: AppColors.lightGray,
           ),
         ],
       ),
