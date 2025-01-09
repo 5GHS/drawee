@@ -1,8 +1,8 @@
 import 'package:drawee/constant/colors.dart';
 import 'package:flutter/material.dart';
 
-class SearchPage extends StatelessWidget {
-  const SearchPage({super.key});
+class SubjectSearchPage extends StatelessWidget {
+  const SubjectSearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
