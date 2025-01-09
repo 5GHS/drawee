@@ -1,4 +1,4 @@
-import 'package:drawee/add_mock_data.dart';
+import 'package:drawee/domain/entities/subject.dart';
 
 abstract interface class SubjectRepository {
   Future<Subject?> getSubject(String query);
