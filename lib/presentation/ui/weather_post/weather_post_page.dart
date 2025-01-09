@@ -48,23 +48,23 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('마음 날씨별 보기'),
+        title: const Text(
+          '마음 날씨별 보기',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: WeatherType.values.length,
-              itemBuilder: (context, index) {
-                final weather = WeatherType.values[index];
-                final isSelected = _selectedWeather == weather;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: WeatherType.values.map((weather) {
+                  final isSelected = _selectedWeather == weather;
+                  return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
@@ -80,10 +80,8 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
                               _selectedWeather = weather;
                             });
                             if (weather == WeatherType.all) {
-                              // 전체 선택 시 빈 배열 상태로 돌아감
                               ref.read(postViewModelProvider.notifier).build();
                             } else {
-                              // 특정 날씨 선택 시 해당 날씨의 포스트 로드
                               ref
                                   .read(postViewModelProvider.notifier)
                                   .getPostsByWeather(weather.name);
@@ -98,47 +96,51 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Text(
                         weather.label,
                         style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? AppColors.green : AppColors.black,
+                          fontSize: 14,
+                          color:
+                              isSelected ? AppColors.green : AppColors.darkGray,
                           fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
+                              isSelected ? FontWeight.bold : FontWeight.w500,
                         ),
                       ),
                     ],
-                  ),
-                );
-              },
-            ),
-          ),
-          const Divider(),
-          Expanded(
-            child: postsAsync.when(
-              data: (posts) {
-                if (posts.isEmpty) {
-                  return const Center(
-                    child: Text('포스트가 없습니다.'),
                   );
-                }
-                return ListView.builder(
-                  itemCount: posts.length,
-                  itemBuilder: (context, index) {
-                    return PostCard(post: posts[index]);
-                  },
-                );
-              },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (error, stack) => Center(
-                child: Text('Error: $error'),
+                }).toList(),
               ),
             ),
-          ),
-        ],
+            const Divider(
+              height: 1,
+              color: AppColors.lightGray,
+            ),
+            Expanded(
+              child: postsAsync.when(
+                data: (posts) {
+                  if (posts.isEmpty) {
+                    return const Center(
+                      child: Text('포스트가 없습니다.'),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      return PostCard(post: posts[index]);
+                    },
+                  );
+                },
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                error: (error, stack) => Center(
+                  child: Text('Error: $error'),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
