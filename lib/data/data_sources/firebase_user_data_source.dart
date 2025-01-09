@@ -22,7 +22,10 @@ class FirebaseUserDataSource implements UserDataSource {
   @override
   Future<UserDTO?> getUser(String userId) async {
     final doc = await _firestore.collection("users").doc(userId).get();
-    return UserDTO.fromJson(doc.data()!, doc.id);
+    if (doc.exists) {
+      return UserDTO.fromJson(doc.data()!, doc.id);
+    }
+    return null;
   }
 
   @override

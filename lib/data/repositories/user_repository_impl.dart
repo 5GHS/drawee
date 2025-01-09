@@ -19,9 +19,12 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<AppUser> getUser(String userId) async {
+  Future<AppUser?> getUser(String userId) async {
     final user = await _userDataSource.getUser(userId);
-    return user!.toEntity();
+    if (user != null) {
+      return user.toEntity();
+    }
+    return null;
   }
 
   @override
