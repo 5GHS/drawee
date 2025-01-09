@@ -1,4 +1,4 @@
-import 'package:drawee/core/providers/firebase_providers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/data/data_sources/firebase_post_data_source.dart';
 import 'package:drawee/data/data_sources/post_data_source.dart';
@@ -14,7 +14,7 @@ import 'package:drawee/domain/usecases/post/get_posts_by_subject_id_usecase.dart
 import 'package:drawee/domain/usecases/post/get_posts_by_user_id_usecase.dart';
 
 final postDataSourceProvider = Provider<PostDataSource>((ref) {
-  return FirebasePostDataSource(ref.watch(firestoreProvider));
+  return FirebasePostDataSource(FirebaseFirestore.instance);
 });
 
 final postRepositoryProvider = Provider<PostRepository>((ref) {

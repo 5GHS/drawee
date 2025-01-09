@@ -35,15 +35,9 @@ class PostRepositoryImpl implements PostRepository {
       'imageUrl': post.imageUrl,
       'subjectId': post.subjectId,
       'weather': post.weather,
-      'likes': post.likes,
+      'likes': post.likes, // 어짜피 0
       'createdAt': post.createdAt.toIso8601String(),
-      'comments': post.comments
-          .map((comment) => {
-                'content': comment.content,
-                'userId': comment.userId,
-                'createdAt': comment.createdAt.toIso8601String(),
-              })
-          .toList(),
+      'comments': post.comments // 어짜피 []
     };
     await _postDataSource.createPost(data);
   }
