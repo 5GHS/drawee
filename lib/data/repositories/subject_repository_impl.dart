@@ -7,11 +7,13 @@ class SubjectRepositoryImpl implements SubjectRepository {
 
   SubjectRepositoryImpl(this._subjectDataSource);
 
+  // query와 일치하는 Subject 객체를 찾는 함수
   @override
   Future<Subject?> getSubject(String query) async {
     throw UnimplementedError();
   }
 
+  // query를 포함하는 Subject의 리스트를 찾는 함수
   @override
   Future<List<Subject>> getSubjects(String query) async {
     final dtos = await _subjectDataSource.getSubjects(query);
