@@ -2,15 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<<<<<<< HEAD
-=======
 	<key>CLIENT_ID</key>
 	<string>1096456258246-m706qi66f9s8t2ae3tegj3rd9it5vhq6.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.1096456258246-m706qi66f9s8t2ae3tegj3rd9it5vhq6</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>1096456258246-4cbnb01kra3an7vv74l950vd41dh1egk.apps.googleusercontent.com</string>
->>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
 	<key>API_KEY</key>
 	<string>AIzaSyCKT6wadJ8HpL8NUWPgF90A12nVDjHA1PI</string>
 	<key>GCM_SENDER_ID</key>
@@ -18,11 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-<<<<<<< HEAD
-	<string>com.example.drawee</string>
-=======
 	<string>com.oghs.drawee</string>
->>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
 	<key>PROJECT_ID</key>
 	<string>drawee-f84dc</string>
 	<key>STORAGE_BUCKET</key>
@@ -38,10 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-<<<<<<< HEAD
-	<string>1:1096456258246:ios:69cdc622bf95543f450dc7</string>
-=======
 	<string>1:1096456258246:ios:7e112101ae48f5cc450dc7</string>
->>>>>>> 3e82f4a64e15ccef27dcf73fc84226dc6a4e50e2
 </dict>
 </plist>

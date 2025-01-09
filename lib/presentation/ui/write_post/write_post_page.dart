@@ -1,6 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
 class WritePostPage extends StatefulWidget {
@@ -11,22 +12,48 @@ class WritePostPage extends StatefulWidget {
 }
 
 class _WritePageState extends State<WritePostPage> {
-  File? _image; // 이미지 저장할 변수
+  File? _image; // 이미지 저장할 변수 - 원본 이미지
+  File? _lineArtImage; // 라인아트 이미지
   final ImagePicker _picker = ImagePicker(); // 이미지 피커 인스턴스
 
-  // 이미지 선택 함수
-  Future<void> _pickImage(ImageSource source) async {
+  // Sobel Edge Detection 함수
+  Future<File> _convertToLineArt(File originalImage) async {
+    final bytes = await originalImage.readAsBytes();
+    final img.Image? image = img.decodeImage(bytes);
+
+    if (image == null) {
+      throw Exception('이미지를 불러올 수 없습니다');
+    }
+
+    final img.Image grayscale = img.grayscale(image); // 그레이스케일
+    final img.Image sobel = img.sobel(grayscale); // 소벨 필터 적용
+    final img.Image inverted = img.invert(sobel); // 흰색과 검은색 반전
+    //final Uint8List sketchBytest = Uint8List.fromList(img.encodePng(inverted));
+
+    final tempDir = Directory.systemTemp;
+    final File output = File('${tempDir.path}/line_art.png');
+    print('라인아트 이미지 경로: ${output.path}');
+    await output.writeAsBytes(img.encodePng(sobel));
+    return output;
+  }
+
+  // 이미지 선택 함수에 라인아트 기능 더하기
+  Future<void> _pickAndProcessImage(ImageSource source) async {
     final XFile? pickedFile =
         await _picker.pickImage(source: source); // 갤러리에서 선택 또는 사진 찍기 모두 지원하도록
     if (pickedFile != null) {
+      final originalImage = File(pickedFile.path);
+      final lineArtImage = await _convertToLineArt(originalImage);
+
       setState(() {
-        _image = File(pickedFile.path); // 선택된 이미지 파일 상태 변수에 저장
+        _image = originalImage; // 선택된 이미지 파일 상태 변수에 저장
+        _lineArtImage = lineArtImage; // 라인아트 이미지 파일 상태 변수에 저장
       });
     }
   }
 
   // 갤러리 또는 카메라
-  Future<void> _showImageSourceDialog() async {
+  Future<void> _showImageSourceActionSheet() async {
     await showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -38,7 +65,7 @@ class _WritePageState extends State<WritePostPage> {
                   title: Text('갤러리에서 선택'),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.gallery);
+                    _pickAndProcessImage(ImageSource.gallery);
                   },
                 ),
                 ListTile(
@@ -46,7 +73,7 @@ class _WritePageState extends State<WritePostPage> {
                   title: Text('카메라로 촬영'),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.camera);
+                    _pickAndProcessImage(ImageSource.camera);
                   },
                 ),
               ],
@@ -55,6 +82,7 @@ class _WritePageState extends State<WritePostPage> {
         });
   }
 
+// /data/user/0/com.oghs.drawee/code_cache/line_art.png
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +107,7 @@ class _WritePageState extends State<WritePostPage> {
                 Text('그림'),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: _showImageSourceDialog,
+                  onTap: _showImageSourceActionSheet,
                   child: Container(
                     height: 360,
                     width: double.infinity,
@@ -99,7 +127,8 @@ class _WritePageState extends State<WritePostPage> {
                               ]))
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child: Image.file(_image!, fit: BoxFit.cover)),
+                            child:
+                                Image.file(_lineArtImage!, fit: BoxFit.cover)),
                   ),
                 ),
                 SizedBox(height: 10),
