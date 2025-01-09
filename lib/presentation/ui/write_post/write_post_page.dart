@@ -89,12 +89,14 @@ class _WritePageState extends State<WritePostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: AppColors.white,
         appBar: AppBar(title: Text('새 그림 일기')),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(height: 16),
                 SectionTitle(text: '주제'),
                 SizedBox(height: 16),
                 Container(
@@ -109,13 +111,32 @@ class _WritePageState extends State<WritePostPage> {
                       filled: true,
                       fillColor: AppColors.lightGray,
                       border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.gray),
                           borderRadius: BorderRadius.circular(20)),
                       contentPadding: EdgeInsets.symmetric(horizontal: 19),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        color: AppColors.darkGray,
+                        onPressed: () {
+                          // TODO: 주제 검색 기능
+                          print('주제 검색!');
+                        },
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 16),
                 SectionTitle(text: '날씨'),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    IconButton(icon: Icon(Icons.wb_sunny), onPressed: () {}),
+                    IconButton(icon: Icon(Icons.cloud), onPressed: () {}),
+                    IconButton(icon: Icon(Icons.wb_cloudy), onPressed: () {}),
+                    IconButton(icon: Icon(Icons.ac_unit), onPressed: () {}),
+                    IconButton(icon: Icon(Icons.grain), onPressed: () {}),
+                  ],
+                ),
                 SizedBox(height: 16),
                 SectionTitle(text: '그림'),
                 SizedBox(height: 16),
@@ -161,14 +182,20 @@ class _WritePageState extends State<WritePostPage> {
                   ),
                 ),
                 SizedBox(height: 16),
-                SectionTitle(text: '일기 제목'),
+                Container(child: SectionTitle(text: '일기 제목')),
                 SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: "일기 제목을 적어주세요",
-                    hintStyle: hintTextStyle,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
+                Container(
+                  height: 42,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      hintText: "일기 제목을 적어주세요",
+                      hintStyle: hintTextStyle,
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.gray),
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -176,16 +203,21 @@ class _WritePageState extends State<WritePostPage> {
                 SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       hintText: "일기 내용을 적어주세요",
                       hintStyle: hintTextStyle,
                       border: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.gray),
                           borderRadius: BorderRadius.circular(20))),
                   maxLines: 10,
                 ),
                 SizedBox(height: 30),
 
                 // 일기 업로드 버튼
+                // TODO: 일기 업로드 버튼 클릭 시 일기 업로드 기능 구현
                 Container(
+                  height: 54,
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {},
