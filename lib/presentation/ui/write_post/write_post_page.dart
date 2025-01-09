@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
+import 'package:drawee/presentation/ui/write_post/widgets/section_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
@@ -28,7 +31,7 @@ class _WritePageState extends State<WritePostPage> {
     final img.Image grayscale = img.grayscale(image); // 그레이스케일
     final img.Image sobel = img.sobel(grayscale); // 소벨 필터 적용
     final img.Image inverted = img.invert(sobel); // 흰색과 검은색 반전
-    //final Uint8List sketchBytest = Uint8List.fromList(img.encodePng(inverted));
+    //final img.Image blurred = img.gaussianBlur(inverted, radius: 2); // 블러 처리는 의미가 별로 없구만
 
     final tempDir = Directory.systemTemp;
     final File output = File('${tempDir.path}/line_art.png');
@@ -92,24 +95,34 @@ class _WritePageState extends State<WritePostPage> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Text('주제'),
-                // TODO: 주제 선택 모듈
-                TextField(
-                  decoration: InputDecoration(
+                SectionTitle(text: '주제'),
+                SizedBox(height: 16),
+                Container(
+                  height: 40,
+                  child: TextField(
+                    decoration: InputDecoration(
                       hintText: "글과 관련된 주제를 선택해 주세요",
+                      hintStyle: TextStyle(
+                          color: AppColors.darkGray,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500),
+                      filled: true,
+                      fillColor: AppColors.lightGray,
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20))),
+                          borderRadius: BorderRadius.circular(20)),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 19),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 10),
-                Text('마음 날씨'),
-                // TODO: 마음날씨 선택 모듈
-                SizedBox(height: 10),
-                Text('그림'),
-                SizedBox(height: 10),
+                SizedBox(height: 16),
+                SectionTitle(text: '날씨'),
+                SizedBox(height: 16),
+                SectionTitle(text: '그림'),
+                SizedBox(height: 16),
                 GestureDetector(
                   onTap: _showImageSourceActionSheet,
                   child: Container(
-                    height: 360,
+                    height: 362,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
@@ -121,9 +134,25 @@ class _WritePageState extends State<WritePostPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                 Image.asset('assets/icon/writePostIcon.png',
-                                    height: 50),
-                                Text('그린 그림 사진을 올려주시면'),
-                                Text('저희가 깔끔한 라인아트로 변경해 드려요!'),
+                                    height: 36),
+                                Text(
+                                  '그린 그림 사진을 올려주시면',
+                                  style: TextStyle(
+                                    fontFamily: 'Pretendard',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.darkGray,
+                                  ),
+                                ),
+                                Text(
+                                  '저희가 깔끔한 라인아트로 변경해 드려요!',
+                                  style: TextStyle(
+                                    fontFamily: 'Pretendard',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.darkGray,
+                                  ),
+                                ),
                               ]))
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(20),
@@ -131,26 +160,50 @@ class _WritePageState extends State<WritePostPage> {
                                 Image.file(_lineArtImage!, fit: BoxFit.cover)),
                   ),
                 ),
-                SizedBox(height: 10),
-                Text('일기 제목'),
+                SizedBox(height: 16),
+                SectionTitle(text: '일기 제목'),
+                SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                     hintText: "일기 제목을 적어주세요",
+                    hintStyle: hintTextStyle,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20)),
                   ),
                 ),
-                SizedBox(height: 10),
-                Text('일기 내용'),
+                SizedBox(height: 16),
+                SectionTitle(text: '일기 내용'),
+                SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                       hintText: "일기 내용을 적어주세요",
+                      hintStyle: hintTextStyle,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20))),
                   maxLines: 10,
                 ),
-                SizedBox(height: 10),
-                ElevatedButton(onPressed: () {}, child: Text("일기 업로드")),
+                SizedBox(height: 30),
+
+                // 일기 업로드 버튼
+                Container(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: Text(
+                      "일기 업로드",
+                      style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(height: 30),
               ],
             ),
