@@ -6,7 +6,7 @@ class UpdateUserUseCase {
 
   UpdateUserUseCase(this._repository);
 
-  Future<void> execute(User user) {
+  Future<void> execute(AppUser user) {
     return _repository.updateUser(user);
   }
 }

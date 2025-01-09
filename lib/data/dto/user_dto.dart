@@ -34,8 +34,8 @@ class UserDTO {
     };
   }
 
-  User toEntity() {
-    return User(
+  AppUser toEntity() {
+    return AppUser(
       id: id,
       imgUrl: imgUrl,
       likedPostsIds: likedPostsIds,
@@ -44,7 +44,7 @@ class UserDTO {
     );
   }
 
-  factory UserDTO.fromEntity(User user) {
+  factory UserDTO.fromEntity(AppUser user) {
     return UserDTO(
       id: user.id,
       imgUrl: user.imgUrl,

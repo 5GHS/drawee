@@ -6,7 +6,7 @@ class GetUserUseCase {
 
   GetUserUseCase(this._repository);
 
-  Future<User> execute(String userId) {
+  Future<AppUser> execute(String userId) {
     return _repository.getUser(userId);
   }
 }

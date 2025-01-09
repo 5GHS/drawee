@@ -9,7 +9,7 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this._userDataSource);
 
   @override
-  Future<void> createUser(User user) async {
+  Future<void> createUser(AppUser user) async {
     await _userDataSource.createUser(UserDTO.fromEntity(user));
   }
 
@@ -19,13 +19,13 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<User> getUser(String userId) async {
+  Future<AppUser> getUser(String userId) async {
     final user = await _userDataSource.getUser(userId);
     return user!.toEntity();
   }
 
   @override
-  Future<void> updateUser(User user) async {
+  Future<void> updateUser(AppUser user) async {
     await _userDataSource.updateUser(user.id, UserDTO.fromEntity(user));
   }
 }
