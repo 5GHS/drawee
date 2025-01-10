@@ -20,22 +20,26 @@ const client = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY);
 // recommend_subject 컬렉션을 algolia index에 업데이트
 async function setRecommendSubjectsData() {
   initializeApp();
+  const recordCollection = [];
 
   const index = client.initIndex("recommend_subjects");
   const firestore = admin.firestore();
   const firestoreCollection = await firestore.collection("recommend_subjects");
 
   try {
-    const snapshot = await firestoreCollection.doc("recommend").get();
+    const snapshot = await firestoreCollection.get();
     if (!!snapshot) {
-      console.log(snapshot.data());
-      const record = {
-        objectID: "recommend",
-        todayIdx: snapshot.data().todayIdx,
-        subjectId: snapshot.data().subjectId,
-      };
+      for (let i = 0; i < snapshot.docs.length; i++) {
+        const record = {
+          objectID: i + 1,
+          subjectId: snapshot.docs[i].data().subjectId,
+          topic: snapshot.docs[i].data().topic,
+        };
+        recordCollection.push(record);
+      }
+
       await index
-        .saveObjects([record], { autoGenerateObjectIDIfNotExist: true })
+        .saveObjects(recordCollection, { autoGenerateObjectIDIfNotExist: true })
         .wait();
     }
   } catch (e) {
