@@ -8,18 +8,15 @@ class SubjectPostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SubjectSearchPage(),
-              )),
-          child: Container(
-            width: 100,
-            height: 100,
-            color: Colors.black,
-          ),
-        ),
+        child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SubjectSearchPage(),
+                  ));
+            },
+            child: Text('검색')),
         //child: Text('Subject Post Page'),
       ),
     );
