@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/section_title.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:pro_image_editor/pro_image_editor.dart';
 
 class WritePostPage extends StatefulWidget {
   const WritePostPage({super.key});
@@ -17,44 +19,38 @@ class WritePostPage extends StatefulWidget {
 }
 
 class _WritePageState extends State<WritePostPage> {
-  File? _image; // 이미지 저장할 변수 - 원본 이미지
-  File? _lineArtImage; // 라인아트 이미지
+  File? _image; // 이미지 저장할 변수
+  Uint8List? _editedImage; // 편집된 이미지 저장할 변수
+
   final ImagePicker _picker = ImagePicker(); // 이미지 피커 인스턴스
 
-  // Sobel Edge Detection 함수
-  Future<File> _convertToLineArt(File originalImage) async {
-    final bytes = await originalImage.readAsBytes();
-    final img.Image? image = img.decodeImage(bytes);
-
-    if (image == null) {
-      throw Exception('이미지를 불러올 수 없습니다');
-    }
-
-    //final img.Image grayscale = img.grayscale(image); // 그레이스케일
-    final img.Image sobel = img.sobel(image); // 소벨 필터 적용
-    final img.Image inverted = img.invert(sobel); // 흰색과 검은색 반전
-    //final img.Image blurred = img.gaussianBlur(inverted, radius: 2); // 블러 처리는 의미가 별로 없구만
-
-    final tempDir = Directory.systemTemp;
-    final File output = File('${tempDir.path}/line_art.png');
-    print('라인아트 이미지 경로: ${output.path}');
-    await output.writeAsBytes(img.encodePng(sobel));
-    return output;
-  }
-
-  // 이미지 선택 함수에 라인아트 기능 더하기
-  Future<void> _pickAndProcessImage(ImageSource source) async {
+  // 이미지 선택하고 ProImageEditor로 편집도 수행
+  Future<void> _pickAndEditImage(ImageSource source) async {
     final XFile? pickedFile =
         await _picker.pickImage(source: source); // 갤러리에서 선택 또는 사진 찍기 모두 지원하도록
-    if (pickedFile != null) {
-      final originalImage = File(pickedFile.path);
-      final lineArtImage = await _convertToLineArt(originalImage);
-
-      setState(() {
-        _image = originalImage; // 선택된 이미지 파일 상태 변수에 저장
-        _lineArtImage = lineArtImage; // 라인아트 이미지 파일 상태 변수에 저장
-      });
-    }
+    if (pickedFile == null) return; // 이미지 선택하지 않으면 종료
+    final originalImage = File(pickedFile.path); // 선택된 이미지 파일
+    final File? editedImage = await Navigator.push<File?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProImageEditor.file(
+          originalImage,
+          callbacks: ProImageEditorCallbacks(
+            onImageEditingComplete: (Uint8List bytes) async {
+              final tempDir = Directory.systemTemp;
+              final editedFile =
+                  File('${tempDir.path}/${Random().nextInt(10000)}.png');
+              await editedFile.writeAsBytes(bytes);
+              Navigator.pop(context, editedFile);
+              // return editedFile;
+            },
+          ),
+        ),
+      ),
+    );
+    setState(() {
+      _image = editedImage ?? originalImage;
+    });
   }
 
   // 갤러리 또는 카메라
@@ -70,7 +66,7 @@ class _WritePageState extends State<WritePostPage> {
                   title: Text('갤러리에서 선택'),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickAndProcessImage(ImageSource.gallery);
+                    _pickAndEditImage(ImageSource.gallery);
                   },
                 ),
                 ListTile(
@@ -78,7 +74,7 @@ class _WritePageState extends State<WritePostPage> {
                   title: Text('카메라로 촬영'),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickAndProcessImage(ImageSource.camera);
+                    _pickAndEditImage(ImageSource.camera);
                   },
                 ),
               ],
@@ -207,8 +203,7 @@ class _WritePageState extends State<WritePostPage> {
                               ]))
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(20),
-                            child:
-                                Image.file(_lineArtImage!, fit: BoxFit.cover)),
+                            child: Image.file(_image!, fit: BoxFit.cover)),
                   ),
                 ),
                 SizedBox(height: 16),
