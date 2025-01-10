@@ -55,7 +55,7 @@ class SubjectSearchPage extends ConsumerWidget {
                           if (query.trim().isNotEmpty &&
                               textPattern.hasMatch(query)) {
                             viewModel.getSubjects(query);
-                          }
+                          } else if (query.isEmpty) {}
                         },
                       ),
                     ),
