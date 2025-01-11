@@ -12,10 +12,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
   @override
   FutureOr<Subject?> build() {
-    return getTodaySubject();
+    return getRecommendSubject();
   }
 
-  Future<Subject?> getTodaySubject() async {
+  Future<Subject?> getRecommendSubject() async {
     state = const AsyncValue.loading();
     final int date = DateTime.now().day;
     try {
@@ -34,8 +34,8 @@ class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
       return null;
     }
   }
-
-  final recommendSubjectViewModelProvider =
-      AsyncNotifierProvider<RecommendSubjectViewModel, Subject?>(
-          () => RecommendSubjectViewModel());
 }
+
+final recommendSubjectViewModelProvider =
+    AsyncNotifierProvider<RecommendSubjectViewModel, Subject?>(
+        () => RecommendSubjectViewModel());

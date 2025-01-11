@@ -9,7 +9,7 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
   FutureOr<List<Subject>> build() async {
     final subjectToday = await ref
         .read(recommendSubjectViewModelProvider.notifier)
-        .getTodayRecommendSubject();
+        .getRecommendSubject();
     return subjectToday == null ? [] : [subjectToday];
   }
 
@@ -19,7 +19,7 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
     try {
       final recommendSubject = await ref
           .read(recommendSubjectViewModelProvider.notifier)
-          .getTodayRecommendSubject();
+          .getRecommendSubject();
       if (recommendSubject == null) {
         return;
       }
