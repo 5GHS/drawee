@@ -8,9 +8,9 @@ class RecommendSubjectRepositoryImpl implements RecommendSubjectRepository {
   RecommendSubjectRepositoryImpl(this._recommendSubjectDataSource);
 
   @override
-  Future<RecommendSubject?> getRecommendSubjectByIndex(int subjectIndex) async {
-    final dto = await _recommendSubjectDataSource
-        .getRecommendSubjectByIndex(subjectIndex);
+  Future<RecommendSubject?> getRecommendSubject(int subjectIndex) async {
+    final dto =
+        await _recommendSubjectDataSource.getRecommendSubject(subjectIndex);
     if (dto == null) return null;
     return dto.toEntity();
   }

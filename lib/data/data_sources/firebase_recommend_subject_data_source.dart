@@ -8,8 +8,7 @@ class FirebaseRecommendSubjectDataSource implements RecommendSubjectDataSource {
   FirebaseRecommendSubjectDataSource(this._firebaseFirestore);
 
   @override
-  Future<RecommendSubjectDTO?> getRecommendSubjectByIndex(
-      int subjectIndex) async {
+  Future<RecommendSubjectDTO?> getRecommendSubject(int subjectIndex) async {
     final doc = await _firebaseFirestore
         .collection("recommend_subjects")
         .doc("$subjectIndex")
