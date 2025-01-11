@@ -1,5 +1,5 @@
-import 'package:drawee/domain/entities/recommend_subject.dart';
+import 'package:drawee/data/dto/recommend_subject_dto.dart';
 
 abstract interface class RecommendSubjectDataSource {
-  Future<RecommendSubject?> getRecommendSubject(String query);
+  Future<RecommendSubjectDTO?> getRecommendSubjectByIndex(int subjectIndex);
 }
