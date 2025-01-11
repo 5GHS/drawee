@@ -6,7 +6,7 @@ class GetRecommendSubjectUsecase {
 
   GetRecommendSubjectUsecase(this._repository);
 
-  Future<RecommendSubject?> excute(int subjectIndex) {
+  Future<RecommendSubject?> excute(int subjectIndex) async {
     return _repository.getRecommendSubject(subjectIndex);
   }
 }
