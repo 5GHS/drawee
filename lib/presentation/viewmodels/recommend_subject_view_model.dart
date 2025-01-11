@@ -34,4 +34,8 @@ class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
       return null;
     }
   }
+
+  final recommendSubjectViewModelProvider =
+      AsyncNotifierProvider<RecommendSubjectViewModel, Subject?>(
+          () => RecommendSubjectViewModel());
 }
