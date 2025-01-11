@@ -7,30 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SubjectViewModel extends AsyncNotifier<List<Subject>> {
   @override
   FutureOr<List<Subject>> build() async {
-    final subjectToday = await getSubjectToday();
+    final subjectToday = await ref
+        .read(recommendSubjectViewModelProvider.notifier)
+        .getTodayRecommendSubject();
     return subjectToday == null ? [] : [subjectToday];
-  }
-
-  // 오늘의 주제를 Subject 객체로 반환
-  Future<Subject?> getSubjectToday() async {
-    state = const AsyncValue.loading();
-    try {
-      final recommendSubject = await ref
-          .read(recommendSubjectViewModelProvider.notifier)
-          .getTodayRecommendSubject();
-      if (recommendSubject == null) {
-        return null;
-      }
-      ref
-          .read(getSubjectUsecaseProvider)
-          .execute(recommendSubject.topic)
-          .then((value) {
-        return value;
-      });
-    } catch (e) {
-      print(e);
-      return null;
-    }
   }
 
   // 오늘의 주제를 검색해서 상태값에 반영
