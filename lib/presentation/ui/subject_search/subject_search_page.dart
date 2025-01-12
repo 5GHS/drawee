@@ -69,8 +69,7 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                                   textPattern
                                       .hasMatch(textEditingController.text)) {
                                 viewModel.getSubjects(query);
-                                print('search');
-                              } else if (query.isEmpty) {
+                              } else if (textEditingController.text.isEmpty) {
                                 viewModel.getListOfSubjectToday();
                               }
                             },
@@ -99,65 +98,73 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                   height: 20,
                 ),
                 // 검색 결과 리스트뷰
+                textEditingController.text.isEmpty
+                    ? const Text(
+                        '오늘의 주제',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: AppColors.black,
+                        ),
+                      )
+                    : const Text(
+                        '검색 결과',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: AppColors.black,
+                        ),
+                      ),
                 subjectsAsync.when(
                   data: (subjects) {
-                    if (subjects.isNotEmpty) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '검색 결과',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18,
-                              color: AppColors.black,
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 500,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: subjects.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              // 임시 데이터
+                              '# ${subjects[index].topic}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: AppColors.green,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 500,
-                            child: ListView.builder(
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                              itemCount: subjects.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  child: Text(
-                                    // 임시 데이터
-                                    '# ${subjects[index].topic}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                      color: AppColors.green,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return const Column(
-                        children: [
-                          Text(
-                            '오늘의 주제',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 18,
-                              color: AppColors.black,
-                            ),
-                          ),
-                        ],
-                      );
-                    }
+                          );
+                        },
+                      ),
+                    );
                   },
                   error: (error, stack) {
-                    return Text('error');
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        '오류가 발생했습니다.',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 12,
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                    );
                   },
                   loading: () {
-                    return Text('loading');
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        '로딩 중...',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w200,
+                          fontSize: 16,
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                    );
                   },
                 ),
               ],
