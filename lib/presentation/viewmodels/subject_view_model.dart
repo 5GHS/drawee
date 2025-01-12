@@ -42,7 +42,7 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
         () => ref.read(getSubjectsUsecaseProvider).excute(query));
   }
 
-  // 주제 하나 검색
+  // 주제 검색
   Future<Subject?> getSubject(String query) async {
     return ref.read(getSubjectUsecaseProvider).execute(query);
   }
