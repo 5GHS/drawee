@@ -1,10 +1,9 @@
 import 'package:drawee/domain/entities/recommend_subject.dart';
-import 'package:flutter/material.dart';
 
 class RecommendSubjectDTO {
-  int subjectIndex;
-  String subjectId;
-  String topic;
+  int subjectIndex; // 날짜와 일치하는 추천 주제의 인덱스
+  String subjectId; // 주제 ID
+  String topic; // 주제
 
   RecommendSubjectDTO({
     required this.subjectIndex,
