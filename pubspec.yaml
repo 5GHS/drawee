@@ -24,6 +24,11 @@ dependencies:
   convert: ^3.1.2
   http: ^1.2.2
   firebase_storage: ^12.4.0
+  tflite_flutter: ^0.11.0
+  yolo_helper:
+    git:
+      url: https://github.com/fhelper/flutter-yolo-helper.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +43,7 @@ flutter:
     - assets/images/
     - assets/icon/
     - assets/icon/bottom_navigation_icons/
+    - assets/yolo/
 
   fonts:
     - family: Pretendard
