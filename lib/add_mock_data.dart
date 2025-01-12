@@ -122,8 +122,30 @@ class Comment {
   }
 }
 
+// -------------------------------
+// 5) MockRecommendSubject Entity
+// -------------------------------
+class MockRecommendSubject {
+  final int subjectIndex;
+  final String subjectId;
+  final String topic;
+
+  MockRecommendSubject({
+    required this.subjectIndex,
+    required this.subjectId,
+    required this.topic,
+  });
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'subjectId': subjectId,
+      'topic': topic,
+    };
+  }
+}
+
 // -----------------------
-// 5) Mock Data Upload
+// 6) Mock Data Upload
 // -----------------------
 class AddMockData extends StatelessWidget {
   const AddMockData({Key? key}) : super(key: key);
@@ -304,12 +326,123 @@ class AddMockData extends StatelessWidget {
     print('Mock data uploaded with liked/writtenPostsIds in users!');
   }
 
+  // --------------------
+  // addSubjectMockData()
+  // --------------------
+
+  Future<void> addSubjectMockData() async {
+    await Firebase.initializeApp();
+    final firestore = FirebaseFirestore.instance;
+
+    final topics = [
+      "강아지",
+      "크리스마스",
+      "곰",
+      "사과",
+      "설날",
+      "자연",
+      "즐거움",
+      "춤",
+      "전통",
+      "모험",
+      "도시",
+      "사이언스 픽션",
+      "고양이",
+      "외로움",
+      "연인",
+      "카페",
+      "바닷속 세상",
+      "눈사람",
+      "열정",
+      "햄스터",
+      "낙타",
+      "해적",
+      "감기 걸린 날",
+      "피크닉",
+      "고민되는 순간",
+      "잔치",
+      "베이커리",
+      "전기장판",
+      "초능력",
+      "농구 선수",
+      "강아지 산책",
+    ];
+
+    // // recommendSubject 데이터 준비
+    // final recommendSubjectMap = <String, MockRecommendSubject>{};
+    // final recommendSubjectRefMap = <String, DocumentReference>{};
+
+    // for (int i = 0; i < topics.length; i++) {
+    //   final subjectRef = firestore.collection('recommend_subjects').doc();
+    //   final subject = MockRecommendSubject(
+    //     subjectId: subjectRef.id,
+    //     topic: topics[i],
+    //     subjectIndex: i + 1,
+    //   );
+    //   recommendSubjectMap[topics[i]] = subject;
+    //   recommendSubjectRefMap[topics[i]] = subjectRef;
+    // }
+
+    final recommendSubjects = List.generate(31, (i) {
+      // 주제를 아스키코드로 변환하여 subjectId 정함
+      String id = topics[i].codeUnits.join("");
+      if (id.length > 12) {
+        id = id.substring(0, 12);
+      }
+      return MockRecommendSubject(
+        subjectId:
+            '$id${DateTime.now().day}${DateTime.now().month}${DateTime.now().year}',
+        subjectIndex: i + 1,
+        topic: topics[i],
+      );
+    });
+
+    final subjects = List.generate(31, (i) {
+      // 주제를 아스키코드로 변환하여 subjectId 정함
+      String id = topics[i].codeUnits.join("");
+      if (id.length > 12) {
+        id = id.substring(0, 12);
+      }
+      return Subject(
+        subjectId: recommendSubjects[i].subjectId,
+        postsIds: [],
+        topic: recommendSubjects[i].topic,
+      );
+    });
+    // recommend subject map
+    final subjectIdMap = {
+      for (var subject in recommendSubjects) subject.subjectIndex: subject,
+    };
+    // subjectmap
+    final subjectMap = {
+      for (var subject in subjects) subject.subjectId: subject,
+    };
+
+    for (final subject in subjectIdMap.values) {
+      firestore
+          .collection('recommend_subjects')
+          .doc(subject.subjectIndex.toString())
+          .set({
+        "subjectId": subject.subjectId,
+        "topic": subject.topic,
+      });
+    }
+
+    for (final subject in subjectMap.values) {
+      firestore.collection('subjects').doc(subject.subjectId.toString()).set({
+        "postsIds": [],
+        "topic": subject.topic,
+      });
+    }
+    print('success');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: addMockData,
+          onPressed: addSubjectMockData,
           child: const Text("add data"),
         ),
       ),
