@@ -6,7 +6,7 @@ class UpdatePostUseCase {
 
   UpdatePostUseCase(this._repository);
 
-  Future<void> execute(Post post) {
+  Future<bool> execute(Post post) {
     return _repository.updatePost(post);
   }
 }
