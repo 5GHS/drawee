@@ -25,7 +25,7 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
     var subjectList = [];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Consumer(
@@ -33,13 +33,9 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
             final viewModel = ref.watch(subjectViewModelProvider.notifier);
             viewModel.build();
             final subjectsAsync = ref.watch(subjectViewModelProvider);
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 80,
-                ),
                 // 검색창
                 Center(
                   child: Container(
