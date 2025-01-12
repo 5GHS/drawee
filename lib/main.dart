@@ -1,4 +1,5 @@
 import 'package:drawee/add_mock_data.dart';
+import 'package:drawee/domain/usecases/post/yolo_detection_usecase.dart';
 import 'package:drawee/presentation/ui/home/home_page.dart';
 import 'package:drawee/presentation/ui/subject_search/subject_search_page.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
@@ -7,6 +8,7 @@ import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/layout/main_layout.dart';
 import 'package:drawee/core/utils/firestore_utils.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
+import 'package:drawee/presentation/ui/write_post/write_post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:drawee/firebase_options.dart';
@@ -23,6 +25,7 @@ void main() async {
   //   collectionPath: 'users',
   //   documentId: 'FszUedGevd7iynzSDcep',
   // );
+  await yoloDetectionUseCase().init();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -47,7 +50,8 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: const SplashPage(),
+      //home: const SplashPage(),
+      home: const WritePostPage(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drawee/domain/usecases/post/yolo_detection_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/data/data_sources/firebase_post_data_source.dart';
 import 'package:drawee/data/data_sources/post_data_source.dart';
@@ -55,4 +56,8 @@ final getPostsBySubjectIdUseCaseProvider =
 final getPostsByUserIdUseCaseProvider =
     Provider<GetPostsByUserIdUseCase>((ref) {
   return GetPostsByUserIdUseCase(ref.watch(postRepositoryProvider));
+});
+
+final yoloDetectionUseCaseProvider = Provider<yoloDetectionUseCase>((ref) {
+  return yoloDetectionUseCase();
 });

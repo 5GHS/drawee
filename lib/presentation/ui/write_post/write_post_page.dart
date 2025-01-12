@@ -306,7 +306,7 @@ class _WritePageState extends ConsumerState<WritePostPage> {
                       controller: _contentController,
                       maxLines: null,
                       expands: true,
-                      textInputAction: TextInputAction.newline,
+                      textInputAction: TextInputAction.done,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return '내용을 입력해주세요';
@@ -368,18 +368,31 @@ class _WritePageState extends ConsumerState<WritePostPage> {
                           final userName = await _getUserName(userId);
 
                           final newPost = Post(
-                            postId: '', // Firebase will generate this
+                            postId: '',
                             comments: [],
                             content: contentValue,
                             userId: userId,
                             title: titleValue,
-                            imageUrl:
-                                '', // This will be updated after image upload
+                            imageUrl: '',
                             subjectId: subjectValue,
                             weather: weatherValue,
                             likes: 0,
                             createdAt: DateTime.now(),
                           );
+
+                          if (_image != null) {
+                            final containsPerson =
+                                await viewModel.checkHuman(_image!);
+                            if (containsPerson) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('사람이 포함된 이미지는 업로드할 수 없습니다.'),
+                                  backgroundColor: AppColors.onError,
+                                ),
+                              );
+                              return;
+                            }
+                          }
 
                           final success = await viewModel.createPost(newPost,
                               image: _image);
@@ -400,8 +413,8 @@ class _WritePageState extends ConsumerState<WritePostPage> {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(
-                                    '일기 업로드에 실패했습니다: ${viewModel.errorMessage.value}'),
+                                content: Text(viewModel.errorMessage.value ??
+                                    '일기 업로드에 실패했습니다.'),
                                 backgroundColor: AppColors.onError,
                               ),
                             );

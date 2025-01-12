@@ -1,15 +1,17 @@
 import 'dart:io';
-
+import 'dart:developer' as developer;
 import 'package:drawee/domain/entities/post.dart';
 import 'package:drawee/domain/usecases/post/create_post_usecase.dart';
 import 'package:drawee/domain/usecases/post/delete_post_usecase.dart';
 import 'package:drawee/domain/usecases/post/get_post_usecase.dart';
 import 'package:drawee/domain/usecases/post/update_post_usecase.dart';
+import 'package:drawee/domain/usecases/post/yolo_detection_usecase.dart';
 import 'package:drawee/presentation/providers/post_providers.dart';
 import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image/image.dart';
 import 'package:image_picker/image_picker.dart';
 
 class WritePostViewModel {
@@ -17,8 +19,9 @@ class WritePostViewModel {
   final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
   final ValueNotifier<String?> imageUrl = ValueNotifier<String?>(null);
   final ValueNotifier<String?> errorMessage = ValueNotifier<String?>(null);
+  final yoloDetectionUseCase _yoloDetectionUseCase;
 
-  WritePostViewModel(this._postViewModel);
+  WritePostViewModel(this._postViewModel, this._yoloDetectionUseCase);
 
   Future<bool> createPost(Post post, {File? image}) async {
     try {
@@ -95,10 +98,33 @@ class WritePostViewModel {
       throw Exception('사진 업로드 실패: $e');
     }
   }
+
+  Future<bool> checkHuman(File image) async {
+    if (!_yoloDetectionUseCase.isInit) {
+      await _yoloDetectionUseCase.init();
+    }
+
+    final img = decodeImage(image.readAsBytesSync());
+    if (img == null) {
+      developer.log('Failed to decode image', name: 'YOLO Detection');
+      return false;
+    }
+    final detectedObjects = _yoloDetectionUseCase.runInference(img!);
+    final containsPerson = detectedObjects
+        .any((obj) => _yoloDetectionUseCase.label(obj.labelIndex) == 'person');
+
+    developer.log(
+        'Detected objects: ${detectedObjects.map((obj) => _yoloDetectionUseCase.label(obj.labelIndex)).join(', ')}',
+        name: 'YOLO Detection');
+    developer.log('Contains person: $containsPerson', name: 'YOLO Detection');
+
+    return containsPerson;
+  }
 }
 
 final writePostViewModelProvider = Provider<WritePostViewModel>((ref) {
   return WritePostViewModel(
     ref.watch(postViewModelProvider.notifier),
+    ref.watch(yoloDetectionUseCaseProvider),
   );
 });
