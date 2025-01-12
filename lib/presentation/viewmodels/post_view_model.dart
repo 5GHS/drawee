@@ -10,9 +10,15 @@ class PostViewModel extends AsyncNotifier<List<Post>> {
 
   Future<void> getPostsByWeather(String weather) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => ref.read(getPostsByWeatherUseCaseProvider).execute(weather),
-    );
+    try {
+      final posts =
+          await ref.read(getPostsByWeatherUseCaseProvider).execute(weather);
+      // Sort posts by createdAt in descending order
+      posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      state = AsyncValue.data(posts);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
   }
 
   Future<void> getPostsBySubject(String subjectId) async {
@@ -32,16 +38,26 @@ class PostViewModel extends AsyncNotifier<List<Post>> {
         () => ref.read(getPostsByUserIdUseCaseProvider).execute(userId));
   }
 
-  Future<void> createPost(Post post) async {
-    await ref.read(createPostUseCaseProvider).execute(post);
+  Future<bool> createPost(Post post) async {
+    return await ref.read(createPostUseCaseProvider).execute(post);
   }
 
-  Future<void> updatePost(Post post) async {
-    await ref.read(updatePostUseCaseProvider).execute(post);
+  Future<bool> updatePost(Post post) async {
+    final result = await ref.read(updatePostUseCaseProvider).execute(post);
+    if (result) {
+      final posts = await ref.read(getPostsUseCaseProvider).execute();
+      state = AsyncValue.data(posts);
+    }
+    return result;
   }
 
-  Future<void> deletePost(String postId) async {
-    await ref.read(deletePostUseCaseProvider).execute(postId);
+  Future<bool> deletePost(String postId) async {
+    final result = await ref.read(deletePostUseCaseProvider).execute(postId);
+    if (result) {
+      final posts = await ref.read(getPostsUseCaseProvider).execute();
+      state = AsyncValue.data(posts);
+    }
+    return result;
   }
 }
 

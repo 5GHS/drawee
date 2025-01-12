@@ -5,7 +5,7 @@ class DeletePostUseCase {
 
   DeletePostUseCase(this._repository);
 
-  Future<void> execute(String postId) {
+  Future<bool> execute(String postId) {
     return _repository.deletePost(postId);
   }
 }

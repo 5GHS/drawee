@@ -51,32 +51,36 @@ class FirebasePostDataSource implements PostDataSource {
   }
 
   @override
-  Future<void> createPost(Map<String, dynamic> data) async {
+  Future<bool> createPost(Map<String, dynamic> data) async {
     try {
-      await _firestore.collection('posts').add(data);
+      final docRef = _firestore.collection('posts').doc();
+      await docRef.set(data);
+      return true;
     } catch (e) {
       print(e);
-      rethrow;
+      return false;
     }
   }
 
   @override
-  Future<void> updatePost(String postId, Map<String, dynamic> data) async {
+  Future<bool> updatePost(String postId, Map<String, dynamic> data) async {
     try {
       await _firestore.collection('posts').doc(postId).update(data);
+      return true;
     } catch (e) {
       print(e);
-      rethrow;
+      return false;
     }
   }
 
   @override
-  Future<void> deletePost(String postId) async {
+  Future<bool> deletePost(String postId) async {
     try {
       await _firestore.collection('posts').doc(postId).delete();
+      return true;
     } catch (e) {
       print(e);
-      rethrow;
+      return false;
     }
   }
 

@@ -6,7 +6,7 @@ abstract interface class PostRepository {
   Future<List<Post>> getPostsByWeather(String weather);
   Future<List<Post>> getPostsBySubjectId(String subjectId);
   Future<List<Post>> getPostsByUserId(String userId);
-  Future<void> createPost(Post post);
-  Future<void> updatePost(Post post);
-  Future<void> deletePost(String postId);
+  Future<bool> createPost(Post post);
+  Future<bool> updatePost(Post post);
+  Future<bool> deletePost(String postId);
 }

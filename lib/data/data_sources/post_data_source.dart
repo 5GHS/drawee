@@ -6,7 +6,7 @@ abstract interface class PostDataSource {
   Future<List<PostDTO>> getPostsByWeather(String weather);
   Future<List<PostDTO>> getPostsBySubjectId(String subjectId);
   Future<List<PostDTO>> getPostsByUserId(String userId);
-  Future<void> createPost(Map<String, dynamic> data);
-  Future<void> updatePost(String postId, Map<String, dynamic> data);
-  Future<void> deletePost(String postId);
+  Future<bool> createPost(Map<String, dynamic> data);
+  Future<bool> updatePost(String postId, Map<String, dynamic> data);
+  Future<bool> deletePost(String postId);
 }
