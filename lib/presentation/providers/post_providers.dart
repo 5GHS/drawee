@@ -35,7 +35,8 @@ final getPostsByWeatherUseCaseProvider =
 });
 
 final createPostUseCaseProvider = Provider<CreatePostUseCase>((ref) {
-  return CreatePostUseCase(ref.watch(postRepositoryProvider));
+  final repository = ref.watch(postRepositoryProvider);
+  return CreatePostUseCase(repository);
 });
 
 final updatePostUseCaseProvider = Provider<UpdatePostUseCase>((ref) {
