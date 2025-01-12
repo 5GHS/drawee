@@ -9,6 +9,7 @@ import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/section_title.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/weather_button.dart';
 import 'package:drawee/presentation/ui/write_post/write_post_view_model.dart';
+import 'package:drawee/presentation/viewmodels/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,6 +115,7 @@ class _WritePageState extends ConsumerState<WritePostPage> {
   @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(writePostViewModelProvider);
+    final authState = ref.watch(authViewModelProvider);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -350,11 +352,17 @@ class _WritePageState extends ConsumerState<WritePostPage> {
                             return;
                           }
 
+                          final userId = authState.when(
+                            data: (auth) => auth.user?.uid ?? '알 수 없는 사용자',
+                            error: (_, __) => '알 수 없는 사용자',
+                            loading: () => '로딩 중...',
+                          );
+
                           final newPost = Post(
                             postId: '', // Firebase will generate this
                             comments: [],
                             content: contentValue,
-                            userId: 'test_user', // Replace with actual user ID
+                            userId: userId,
                             title: titleValue,
                             imageUrl:
                                 '', // This will be updated after image upload
