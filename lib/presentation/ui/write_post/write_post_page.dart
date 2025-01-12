@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/domain/usecases/post/create_post_usecase.dart';
 import 'package:drawee/presentation/providers/post_providers.dart';
+import 'package:drawee/presentation/providers/user_providers.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/diary_input_field.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
@@ -110,6 +111,12 @@ class _WritePageState extends ConsumerState<WritePostPage> {
             ),
           );
         });
+  }
+
+  Future<String> _getUserName(String userId) async {
+    final userRepository = ref.read(userRepositoryProvider);
+    final user = await userRepository.getUser(userId);
+    return user?.name ?? '알 수 없는 사용자';
   }
 
   @override
@@ -354,9 +361,11 @@ class _WritePageState extends ConsumerState<WritePostPage> {
 
                           final userId = authState.when(
                             data: (auth) => auth.user?.uid ?? '알 수 없는 사용자',
-                            error: (_, __) => '알 수 없는 사용자',
-                            loading: () => '로딩 중...',
+                            error: (_, __) => 'user data error',
+                            loading: () => '사용자 데이터 로딩 중...',
                           );
+
+                          final userName = await _getUserName(userId);
 
                           final newPost = Post(
                             postId: '', // Firebase will generate this
