@@ -32,16 +32,26 @@ class PostViewModel extends AsyncNotifier<List<Post>> {
         () => ref.read(getPostsByUserIdUseCaseProvider).execute(userId));
   }
 
-  Future<void> createPost(Post post) async {
-    await ref.read(createPostUseCaseProvider).execute(post);
+  Future<bool> createPost(Post post) async {
+    return await ref.read(createPostUseCaseProvider).execute(post);
   }
 
-  Future<void> updatePost(Post post) async {
-    await ref.read(updatePostUseCaseProvider).execute(post);
+  Future<bool> updatePost(Post post) async {
+    final result = await ref.read(updatePostUseCaseProvider).execute(post);
+    if (result) {
+      final posts = await ref.read(getPostsUseCaseProvider).execute();
+      state = AsyncValue.data(posts);
+    }
+    return result;
   }
 
-  Future<void> deletePost(String postId) async {
-    await ref.read(deletePostUseCaseProvider).execute(postId);
+  Future<bool> deletePost(String postId) async {
+    final result = await ref.read(deletePostUseCaseProvider).execute(postId);
+    if (result) {
+      final posts = await ref.read(getPostsUseCaseProvider).execute();
+      state = AsyncValue.data(posts);
+    }
+    return result;
   }
 }
 
