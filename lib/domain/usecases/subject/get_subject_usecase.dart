@@ -1,12 +1,12 @@
 import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/domain/repositories/subject_repository.dart';
 
-class GetSubjectsUsecase {
+class GetSubjectUsecase {
   final SubjectRepository _repository;
 
-  GetSubjectsUsecase(this._repository);
+  GetSubjectUsecase(this._repository);
 
-  Future<List<Subject>> excute(String query) {
-    return _repository.getSubjects(query);
+  Future<Subject?> execute(String query) {
+    return _repository.getSubject(query);
   }
 }
