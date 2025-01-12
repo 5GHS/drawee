@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/domain/usecases/post/create_post_usecase.dart';
 import 'package:drawee/presentation/providers/post_providers.dart';
+import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/diary_input_field.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
 import 'package:drawee/presentation/ui/write_post/widgets/section_title.dart';
@@ -389,7 +390,12 @@ class _WritePageState extends ConsumerState<WritePostPage> {
                                     backgroundColor: AppColors.green,
                                   ),
                                 );
-                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const WeatherPostPage()),
+                                );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

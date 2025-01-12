@@ -10,9 +10,15 @@ class PostViewModel extends AsyncNotifier<List<Post>> {
 
   Future<void> getPostsByWeather(String weather) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => ref.read(getPostsByWeatherUseCaseProvider).execute(weather),
-    );
+    try {
+      final posts =
+          await ref.read(getPostsByWeatherUseCaseProvider).execute(weather);
+      // Sort posts by createdAt in descending order
+      posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      state = AsyncValue.data(posts);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
   }
 
   Future<void> getPostsBySubject(String subjectId) async {
