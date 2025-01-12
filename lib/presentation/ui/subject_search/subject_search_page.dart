@@ -22,6 +22,8 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    var subjectList = [];
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Padding(
@@ -65,12 +67,11 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                               hintStyle: TextStyle(color: AppColors.darkGray),
                             ),
                             onChanged: (query) {
-                              if (textEditingController.text.isNotEmpty &&
-                                  textPattern
-                                      .hasMatch(textEditingController.text)) {
-                                viewModel.getSubjects(query);
-                              } else if (textEditingController.text.isEmpty) {
+                              if (textEditingController.text.isEmpty) {
                                 viewModel.getListOfSubjectToday();
+                              } else if (textPattern.hasMatch(query.trim())) {
+                                print('isnotempty$query');
+                                viewModel.getSubjects(query);
                               }
                             },
                           ),
@@ -94,11 +95,47 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                textEditingController.text.isNotEmpty && subjectList.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: double.infinity,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              width: 0.5,
+                              color: AppColors.gray,
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: AppColors.darkGray,
+                                size: 18,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                '검색 결과가 없습니다.',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                    color: AppColors.darkGray),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox(
+                        height: 20,
+                      ),
                 // 검색 결과 리스트뷰
-                textEditingController.text.isEmpty
+                textEditingController.text.isEmpty || subjectList.isEmpty
                     ? const Text(
                         '오늘의 주제',
                         style: TextStyle(
@@ -117,18 +154,18 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                       ),
                 subjectsAsync.when(
                   data: (subjects) {
+                    subjectList = subjects;
                     return SizedBox(
                       width: double.infinity,
                       height: 500,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: subjects.length,
+                        itemCount: subjectList.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Text(
-                              // 임시 데이터
-                              '# ${subjects[index].topic}',
+                              '# ${subjectList[index].topic}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
