@@ -9,14 +9,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // 이유 : 홈 페이지에서도 <Subject>postsIds 배열을 참조하여 포스트 목록을 생성해야 하기 때문
 // 이 뷰모델에서 관리하는 대상은 Subject로 정함
 
-class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
+class RecommendSubjectViewModel extends Notifier<Subject?> {
   @override
-  FutureOr<Subject?> build() {
-    return getRecommendSubject();
+  Subject? build() {
+    // TODO: implement build
+    throw UnimplementedError();
   }
 
   Future<Subject?> getRecommendSubject() async {
-    state = const AsyncValue.loading();
     final int date = DateTime.now().day;
     try {
       final todayRecommendSubject =
@@ -24,8 +24,10 @@ class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
 
       if (todayRecommendSubject != null) {
         final todayTopic = todayRecommendSubject.topic;
-        state = await AsyncValue.guard(
-            () => ref.watch(getSubjectUsecaseProvider).execute(todayTopic));
+        final todaySubject =
+            await ref.watch(getSubjectUsecaseProvider).execute(todayTopic);
+        state = todaySubject;
+        return todaySubject;
       }
       return null;
     } catch (e, stack) {
@@ -37,5 +39,5 @@ class RecommendSubjectViewModel extends AsyncNotifier<Subject?> {
 }
 
 final recommendSubjectViewModelProvider =
-    AsyncNotifierProvider<RecommendSubjectViewModel, Subject?>(
+    NotifierProvider<RecommendSubjectViewModel, Subject?>(
         () => RecommendSubjectViewModel());
