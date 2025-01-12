@@ -23,6 +23,7 @@ dependencies:
   algoliasearch: ^1.28.3
   convert: ^3.1.2
   http: ^1.2.2
+  firebase_storage: ^12.4.0
 
 
 dev_dependencies:
