@@ -13,7 +13,8 @@ class SubjectDTO {
 
   factory SubjectDTO.fromJson(Map<String, dynamic> json, String documentId) {
     return SubjectDTO(
-      postsIds: json['postsIds'] as List<String>,
+      postsIds:
+          (json['postsIds'] as List<dynamic>).map((e) => e.toString()).toList(),
       topic: json['topic'],
       subjectId: documentId,
     );

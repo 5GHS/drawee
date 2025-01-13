@@ -26,8 +26,9 @@ class AlgoliaSubjectDataSource implements SubjectDataSource {
             snapshot.hits.first, snapshot.hits.first.objectID);
       }
       return null;
-    } catch (e) {
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
       return null;
     }
   }
@@ -51,8 +52,9 @@ class AlgoliaSubjectDataSource implements SubjectDataSource {
       return snapshot.hits
           .map((hit) => SubjectDTO.fromJson(hit, hit.objectID))
           .toList();
-    } catch (e) {
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
       return [];
     }
   }
