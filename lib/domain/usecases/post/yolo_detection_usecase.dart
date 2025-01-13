@@ -19,6 +19,8 @@ class yoloDetectionUseCase {
     _labels = labelStrings.split('\n');
   }
 
+  bool _isRunning = false;
+
   List<DetectedObject> runInference(Image image) {
     if (!isInit) {
       throw Exception('The model must be initialized');
@@ -38,7 +40,24 @@ class yoloDetectionUseCase {
     final output = [
       List<List<double>>.filled(84, List<double>.filled(8400, 0.0))
     ];
-    _interpreter!.run(imageNormalized, output);
+    _isRunning = true; // 인퍼런스 시작
+    try {
+      print(
+          '인퍼런스 돌리는 중 with input shape: ${imageNormalized.length}x${imageNormalized[0].length}');
+      _interpreter!.run(imageNormalized, output);
+    } catch (e) {
+      print('Failed to run inference: $e');
+      throw Exception('Failed to run inference: $e');
+    }
     return YoloHelper.parse(output[0], image.width, image.height);
+  }
+
+  bool get isRunning => _isRunning;
+
+  void dispose() {
+    _interpreter?.close();
+    _interpreter = null;
+    _labels = null;
+    _isRunning = false;
   }
 }
