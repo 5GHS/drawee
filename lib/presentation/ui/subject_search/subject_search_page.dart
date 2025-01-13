@@ -1,38 +1,46 @@
+import 'dart:async';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/constant/text_pattern.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SubjectSearchPage extends StatefulWidget {
+class SubjectSearchPage extends ConsumerStatefulWidget {
   const SubjectSearchPage({super.key});
 
   @override
-  State<SubjectSearchPage> createState() => _SubjectSearchPageState();
+  ConsumerState<SubjectSearchPage> createState() => _SubjectSearchPageState();
 }
 
-class _SubjectSearchPageState extends State<SubjectSearchPage> {
-  TextEditingController textEditingController = TextEditingController();
+class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
+  Timer? _debounce;
+  final textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(subjectViewModelProvider.notifier).getRecommendSubjects();
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     textEditingController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var subjectList = [];
-
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Consumer(
           builder: (context, ref, child) {
-            final viewModel = ref.watch(subjectViewModelProvider.notifier);
-            viewModel.build();
             final subjectsAsync = ref.watch(subjectViewModelProvider);
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -63,12 +71,22 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                               hintStyle: TextStyle(color: AppColors.darkGray),
                             ),
                             onChanged: (query) {
-                              if (textEditingController.text.isEmpty) {
-                                viewModel.getListOfSubjectToday();
-                              } else if (textPattern.hasMatch(query.trim())) {
-                                print('isnotempty$query');
-                                viewModel.getSubjects(query);
-                              }
+                              if (_debounce?.isActive ?? false)
+                                _debounce?.cancel();
+                              _debounce =
+                                  Timer(const Duration(milliseconds: 300), () {
+                                if (textEditingController.text.isNotEmpty &&
+                                    textPattern
+                                        .hasMatch(textEditingController.text)) {
+                                  ref
+                                      .read(subjectViewModelProvider.notifier)
+                                      .getSubjects(query);
+                                } else if (textEditingController.text.isEmpty) {
+                                  ref
+                                      .read(subjectViewModelProvider.notifier)
+                                      .getRecommendSubjects();
+                                }
+                              });
                             },
                           ),
                         ),
@@ -91,77 +109,32 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                     ),
                   ),
                 ),
-                textEditingController.text.isNotEmpty && subjectList.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: double.infinity,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              width: 0.5,
-                              color: AppColors.gray,
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: AppColors.darkGray,
-                                size: 18,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                '검색 결과가 없습니다.',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12,
-                                    color: AppColors.darkGray),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : const SizedBox(
-                        height: 20,
-                      ),
+                const SizedBox(
+                  height: 20,
+                ),
                 // 검색 결과 리스트뷰
-                textEditingController.text.isEmpty || subjectList.isEmpty
-                    ? const Text(
-                        '오늘의 주제',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 18,
-                          color: AppColors.black,
-                        ),
-                      )
-                    : const Text(
-                        '검색 결과',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 18,
-                          color: AppColors.black,
-                        ),
-                      ),
+                const Text(
+                  '검색 결과',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    color: AppColors.black,
+                  ),
+                ),
+                // 검색 결과 리스트
                 subjectsAsync.when(
                   data: (subjects) {
-                    subjectList = subjects;
                     return SizedBox(
                       width: double.infinity,
                       height: 500,
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: subjectList.length,
+                        itemCount: subjects.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: Text(
-                              '# ${subjectList[index].topic}',
+                              '# ${subjects[index].topic}',
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
