@@ -16,6 +16,7 @@ class PostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print(post.comments);
     return Container(
       key: ValueKey(post.postId),
       child: Column(
@@ -131,6 +132,57 @@ class PostCard extends ConsumerWidget {
               GestureDetector(
                 onTap: () {
                   // TODO: 댓글 페이지 이동
+                  // Start Generation Here
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // 댓글 목록
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: post.comments.length,
+                              itemBuilder: (context, index) {
+                                final comment = post.comments[index];
+                                return ListTile(
+                                  leading: Icon(Icons.person),
+                                  title: Text(comment.userId),
+                                  subtitle: Text(comment.content),
+                                );
+                              },
+                            ),
+                            // 댓글 입력 필드
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      decoration: const InputDecoration(
+                                        hintText: '댓글을 입력하세요',
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.send),
+                                    onPressed: () {
+                                      // 댓글 전송 로직 추가
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Row(
                   children: [
