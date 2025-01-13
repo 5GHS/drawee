@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/constant/text_pattern.dart';
-import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
