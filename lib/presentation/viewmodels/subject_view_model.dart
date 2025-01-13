@@ -7,31 +7,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SubjectViewModel extends AsyncNotifier<List<Subject>> {
   @override
   FutureOr<List<Subject>> build() async {
-    final subjectToday = await ref
-        .read(recommendSubjectViewModelProvider.notifier)
-        .getRecommendSubject();
-    return subjectToday == null ? [] : [subjectToday];
+    return [];
   }
 
   // 오늘의 주제를 검색해서 상태값에 반영
-  Future<void> getListOfSubjectToday() async {
-    state = const AsyncValue.loading();
+  // 사용x
+  Future<void> getRecommendSubjects() async {
     try {
-      final recommendSubject = await ref
+      final recommend = await ref
           .read(recommendSubjectViewModelProvider.notifier)
           .getRecommendSubject();
-      if (recommendSubject == null) {
-        return;
-      }
-      state = await AsyncValue.guard(() => ref
+
+      if (recommend != null) {
+        state = await AsyncValue.guard(
+          () => ref
               .read(getSubjectUsecaseProvider)
-              .execute(recommendSubject.topic)
-              .then((value) {
-            if (value == null) return [];
-            return [value];
-          }));
-    } catch (e) {
+              .execute(recommend.subjectId)
+              .then(
+            (value) {
+              if (value == null) return [];
+              return [value];
+            },
+          ),
+        );
+      } else {
+        print('response is null');
+      }
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
     }
   }
 
@@ -39,7 +43,7 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
   Future<void> getSubjects(String query) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
-        () => ref.read(getSubjectsUsecaseProvider).excute(query));
+        () => ref.read(getSubjectsUsecaseProvider).execute(query));
   }
 
   // 주제 검색

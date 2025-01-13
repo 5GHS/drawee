@@ -1,5 +1,6 @@
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/constant/text_pattern.dart';
+import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,17 +23,17 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var subjectList = [];
-
+    List<Subject> subjectList = [];
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Consumer(
           builder: (context, ref, child) {
-            final viewModel = ref.watch(subjectViewModelProvider.notifier);
-            viewModel.build();
+            var viewmodel = ref.read(subjectViewModelProvider.notifier);
+            viewmodel.getRecommendSubjects();
             final subjectsAsync = ref.watch(subjectViewModelProvider);
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -63,11 +64,9 @@ class _SubjectSearchPageState extends State<SubjectSearchPage> {
                               hintStyle: TextStyle(color: AppColors.darkGray),
                             ),
                             onChanged: (query) {
-                              if (textEditingController.text.isEmpty) {
-                                viewModel.getListOfSubjectToday();
-                              } else if (textPattern.hasMatch(query.trim())) {
-                                print('isnotempty$query');
-                                viewModel.getSubjects(query);
+                              if (query.isNotEmpty &&
+                                  textPattern.hasMatch(query.trim())) {
+                                viewmodel.getSubjects(query);
                               }
                             },
                           ),

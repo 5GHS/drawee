@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'package:drawee/domain/entities/subject.dart';
+import 'package:drawee/domain/entities/recommend_subject.dart';
 import 'package:drawee/presentation/providers/recommend_subject_providers.dart';
-import 'package:drawee/presentation/providers/subject_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // RecommendSubjectViewModel에서 오늘의 주제 관리
@@ -9,35 +8,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // 이유 : 홈 페이지에서도 <Subject>postsIds 배열을 참조하여 포스트 목록을 생성해야 하기 때문
 // 이 뷰모델에서 관리하는 대상은 Subject로 정함
 
-class RecommendSubjectViewModel extends Notifier<Subject?> {
+class RecommendSubjectViewModel extends AsyncNotifier<RecommendSubject?> {
   @override
-  Subject? build() {
-    // TODO: implement build
-    throw UnimplementedError();
+  Future<RecommendSubject?> build() async {
+    return ref.read(getRecommendSubjectUsecaseProvider).execute();
   }
 
-  Future<Subject?> getRecommendSubject() async {
-    final int date = DateTime.now().day;
-    try {
-      final todayRecommendSubject =
-          await ref.watch(getRecommendSubjectUsecaseProvider).excute(date);
-
-      if (todayRecommendSubject != null) {
-        final todayTopic = todayRecommendSubject.topic;
-        final todaySubject =
-            await ref.watch(getSubjectUsecaseProvider).execute(todayTopic);
-        state = todaySubject;
-        return todaySubject;
-      }
-      return null;
-    } catch (e, stack) {
-      print(e);
-      print(stack);
-      return null;
-    }
+  Future<RecommendSubject?> getRecommendSubject() async {
+    return await ref.read(getRecommendSubjectUsecaseProvider).execute();
   }
 }
 
 final recommendSubjectViewModelProvider =
-    NotifierProvider<RecommendSubjectViewModel, Subject?>(
+    AsyncNotifierProvider<RecommendSubjectViewModel, RecommendSubject?>(
         () => RecommendSubjectViewModel());

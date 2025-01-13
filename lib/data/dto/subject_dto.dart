@@ -3,21 +3,24 @@ import 'package:drawee/domain/entities/subject.dart';
 class SubjectDTO {
   List<String> postsIds;
   String topic;
+  String subjectId;
 
   SubjectDTO({
     required this.postsIds,
     required this.topic,
+    required this.subjectId,
   });
 
-  SubjectDTO.fromJson(Map<String, dynamic> json)
-      : this(
-          postsIds:
-              (json['postsIds'] as List).map((item) => item as String).toList(),
-          topic: json['topic'],
-        );
+  factory SubjectDTO.fromJson(Map<String, dynamic> json, String documentId) {
+    return SubjectDTO(
+      postsIds: json['postsIds'] as List<String>,
+      topic: json['topic'],
+      subjectId: documentId,
+    );
+  }
 
   Subject toEntity() {
-    return Subject(topic: topic, postsIds: postsIds);
+    return Subject(topic: topic, postsIds: postsIds, subjectId: subjectId);
   }
 
   Map<String, dynamic> toJson() {

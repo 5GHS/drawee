@@ -22,7 +22,7 @@ class PostViewModel extends AsyncNotifier<List<Post>> {
   }
 
   Future<void> getPostsBySubject(String subjectId) async {
-    state = const AsyncValue.loading();
+    //state = const AsyncValue.loading();
     state = await AsyncValue.guard(
       () => ref.read(getPostsBySubjectIdUseCaseProvider).execute(subjectId),
     );
