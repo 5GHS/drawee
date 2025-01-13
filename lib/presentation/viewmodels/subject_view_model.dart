@@ -86,7 +86,24 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
     state = const AsyncValue.loading();
     print('get');
     state = await AsyncValue.guard(() async {
-      return await ref.read(getSubjectsUsecaseProvider).execute(query);
+      final subjects =
+          await ref.read(getSubjectsUsecaseProvider).execute(query);
+
+      // topic 기준으로 중복 제거
+      final uniqueSubjects = subjects
+          .fold<Map<String, Subject>>(
+            {},
+            (map, subject) {
+              if (!map.containsKey(subject.topic)) {
+                map[subject.topic] = subject;
+              }
+              return map;
+            },
+          )
+          .values
+          .toList();
+
+      return uniqueSubjects;
     });
   }
 
