@@ -30,137 +30,140 @@ drawee는 사용자가 매일 주어지는 공통 주제에 따라 그림과 글
 
 <br>
 
-# 🚀 프로젝트에 사용된 기술
+# 🚀 프로젝트에 사용한 기술
 
-- 프로그래밍 언어: Dart + 약간의 JavaScript (Algolia)
 
-- 프레임워크: Flutter
-
-- 검색 기능: Algolia
-
-- 데이터베이스: Firestore
-
-- 아키텍처: Clean Architecture (Presentation, Domain, Data Layer 분리)
+| Technologies | Tools                                                                                                                                                                                                                                                                            |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 언어         | <img src="https://img.shields.io/badge/dart-0175C2?style=for-the-badge&logo=dart&logoColor=white"> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=black">                                                                                                                                                                              |
+| 프레임워크   | <img src="https://img.shields.io/badge/flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white">                                                                                                                                                                         |
+| 데이터베이스   | <img src="https://img.shields.io/badge/Firebase-DD2C00?style=for-the-badge&logo=Firebase&logoColor=white"> <img src="https://img.shields.io/badge/Algolia-003DFF?style=for-the-badge&logo=Algolia&logoColor=white">                                                                                                                                                                         |
+| 에디터       | <img src="https://img.shields.io/badge/VSCode-199ED9?style=for-the-badge">                                                                                                                                                                                                       |
+| 협업         | <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white"> <img src="https://img.shields.io/badge/Fork-00A1E0?style=for-the-badge"> |
+| 주요 라이브러리   | <img src="https://img.shields.io/badge/Riverpod-00CCBC?style=for-the-badge"> <img src="https://img.shields.io/badge/ImagePicker-FFCD00?style=for-the-badge"> <img src="https://img.shields.io/badge/ProImageEditor-DDE072?style=for-the-badge">                                                                                                                            |
 
 <br>
 
 # 🏛️ 프로젝트 구조
 
-```
-├── add_mock_data.dart                                         # 앱 구동 테스트 위한 가짜 데이터 생성
-├── constant                                                   # 앱 컬러 코드 등을 설정
-│   ├── colors.dart
-│   └── text_pattern.dart
-├── core                                                       # 파이어베이스 설정
-│   └── utils
-│       └── firestore_utils.dart
-├── data                                                       # 데이터
-│   ├── data_sources                                           # data/data_sources
-│   │   ├── algolia_subject_data_source.dart
-│   │   ├── auth_data_source.dart
-│   │   ├── firebase_auth_data_source.dart
-│   │   ├── firebase_post_data_source.dart
-│   │   ├── firebase_recommend_subject_data_source.dart
-│   │   ├── firebase_user_data_source.dart
-│   │   ├── post_data_source.dart
-│   │   ├── recommend_subject_data_source.dart
-│   │   ├── subject_data_source.dart
-│   │   └── user_data_source.dart
-│   ├── dto                                                     # data/dto
-│   │   ├── post_dto.dart
-│   │   ├── recommend_subject_dto.dart
-│   │   ├── subject_dto.dart
-│   │   └── user_dto.dart
-│   └── repositories                                            # data/repositories
-│       ├── auth_repository_impl.dart
-│       ├── post_repository_impl.dart
-│       ├── recommend_subject_repository_impl.dart
-│       ├── subject_repository_impl.dart
-│       └── user_repository_impl.dart
-├── domain                                                      # 도메인
-│   ├── entities                                                # domain/entities
-│   │   ├── post.dart
-│   │   ├── recommend_subject.dart
-│   │   ├── subject.dart
-│   │   └── user.dart
-│   ├── repositories                                            # domain/repositories
-│   │   ├── auth_repository.dart
-│   │   ├── post_repository.dart
-│   │   ├── recommend_subject_repository.dart
-│   │   ├── subject_repository.dart
-│   │   └── user_repository.dart
-│   └── usecases                                                # domain/usecases
-│       ├── auth                                                # auth 사용자 인증
-│       │   └── sign_in_google_usecase.dart
-│       ├── post                                                # post 그림일기 포스트
-│       │   ├── create_post_usecase.dart
-│       │   ├── delete_post_usecase.dart
-│       │   ├── get_post_usecase.dart
-│       │   ├── get_posts_by_subject_id_usecase.dart
-│       │   ├── get_posts_by_user_id_usecase.dart
-│       │   ├── get_posts_by_weather_usecase.dart
-│       │   ├── get_posts_usecase.dart
-│       │   └── update_post_usecase.dart
-│       ├── recommend_subject                                   # 추천 주제
-│       │   └── get_recommend_subject_usecase.dart
-│       ├── subject                                             # 주제 관련
-│       │   ├── get_subject_usecase.dart
-│       │   └── get_subjects_usecase.dart
-│       └── user                                                # 유저 관련
-│           ├── create_user_usecase.dart
-│           ├── delete_user_usecase.dart
-│           ├── get_user_usecase.dart
-│           └── update_user_usecase.dart
-├── firebase_options.dart
-├── main.dart
-└── presentation                                                # 프레젠테이션 레이어
-    ├── providers                                               # 프로바이더 모음
-    │   ├── auth_providers.dart
-    │   ├── post_providers.dart
-    │   ├── recommend_subject_providers.dart
-    │   ├── subject_providers.dart
-    │   └── user_providers.dart
-    ├── ui                                                       # ui 화면
-    │   ├── home                                                 # 앱의 첫 진입점, 홈화면
-    │   │   ├── home_page.dart
-    │   │   └── widgets
-    │   │       └── weather_box.dart
-    │   ├── layout
-    │   │   └── main_layout.dart
-    │   ├── login                                                # 로그인 화면
-    │   │   └── login_page.dart
-    │   ├── mypage                                               # 마이페이지
-    │   │   └── mypage_page.dart
-    │   ├── register                                             # 회원 가입
-    │   │   └── register_page.dart
-    │   ├── splash                                               # 스플래쉬 화면
-    │   │   └── splash_page.dart
-    │   ├── subject_post                                         # 주제별 렌더링
-    │   │   └── subject_post_page.dart
-    │   ├── subject_search                                       # 주제 검색
-    │   │   └── subject_search_page.dart
-    │   ├── weather_post                                         # 날씨별 렌더링
-    │   │   └── weather_post_page.dart
-    │   ├── widgets
-    │   │   └── post_card.dart
-    │   └── write_post                                           # 그림일기 작성
-    │       ├── widgets
-    │       │   ├── diary_input_field.dart
-    │       │   ├── hint_text.dart
-    │       │   ├── section_title.dart
-    │       │   └── weather_button.dart
-    │       ├── write_post_page.dart
-    │       └── write_post_view_model.dart
-    └── viewmodels                                               # 뷰모델 모음
-        ├── auth_view_model.dart
-        ├── post_view_model.dart
-        ├── recommend_subject_view_model.dart
-        ├── subject_view_model.dart
-        └── user_view_model.dart
+<details>  
+  <summary> (Click!)디렉토리 구조 </summary>  
+  
+├── add_mock_data.dart                                         # 앱 구동 테스트 위한 가짜 데이터 생성  
+├── constant                                                   # 앱 컬러 코드 등을 설정  
+│   ├── colors.dart  
+│   └── text_pattern.dart  
+├── core                                                       # 파이어베이스 설정  
+│   └── utils  
+│       └── firestore_utils.dart  
+├── data                                                       # 데이터  
+│   ├── data_sources                                           # data/data_sources  
+│   │   ├── algolia_subject_data_source.dart  
+│   │   ├── auth_data_source.dart  
+│   │   ├── firebase_auth_data_source.dart  
+│   │   ├── firebase_post_data_source.dart  
+│   │   ├── firebase_recommend_subject_data_source.dart  
+│   │   ├── firebase_user_data_source.dart  
+│   │   ├── post_data_source.dart  
+│   │   ├── recommend_subject_data_source.dart  
+│   │   ├── subject_data_source.dart  
+│   │   └── user_data_source.dart  
+│   ├── dto                                                     # data/dto  
+│   │   ├── post_dto.dart  
+│   │   ├── recommend_subject_dto.dart  
+│   │   ├── subject_dto.dart  
+│   │   └── user_dto.dart  
+│   └── repositories                                            # data/repositories  
+│       ├── auth_repository_impl.dart  
+│       ├── post_repository_impl.dart  
+│       ├── recommend_subject_repository_impl.dart  
+│       ├── subject_repository_impl.dart  
+│       └── user_repository_impl.dart  
+├── domain                                                      # 도메인  
+│   ├── entities                                                # domain/entities  
+│   │   ├── post.dart  
+│   │   ├── recommend_subject.dart  
+│   │   ├── subject.dart  
+│   │   └── user.dart  
+│   ├── repositories                                            # domain/repositories  
+│   │   ├── auth_repository.dart  
+│   │   ├── post_repository.dart  
+│   │   ├── recommend_subject_repository.dart  
+│   │   ├── subject_repository.dart  
+│   │   └── user_repository.dart  
+│   └── usecases                                                # domain/usecases  
+│       ├── auth                                                # auth 사용자 인증  
+│       │   └── sign_in_google_usecase.dart  
+│       ├── post                                                # post 그림일기 포스트  
+│       │   ├── create_post_usecase.dart  
+│       │   ├── delete_post_usecase.dart  
+│       │   ├── get_post_usecase.dart  
+│       │   ├── get_posts_by_subject_id_usecase.dart  
+│       │   ├── get_posts_by_user_id_usecase.dart  
+│       │   ├── get_posts_by_weather_usecase.dart  
+│       │   ├── get_posts_usecase.dart  
+│       │   └── update_post_usecase.dart  
+│       ├── recommend_subject                                   # 추천 주제  
+│       │   └── get_recommend_subject_usecase.dart  
+│       ├── subject                                             # 주제 관련  
+│       │   ├── get_subject_usecase.dart  
+│       │   └── get_subjects_usecase.dart  
+│       └── user                                                # 유저 관련  
+│           ├── create_user_usecase.dart  
+│           ├── delete_user_usecase.dart  
+│           ├── get_user_usecase.dart  
+│           └── update_user_usecase.dart  
+├── firebase_options.dart  
+├── main.dart  
+└── presentation                                                # 프레젠테이션 레이어  
+    ├── providers                                               # 프로바이더 모음  
+    │   ├── auth_providers.dart  
+    │   ├── post_providers.dart  
+    │   ├── recommend_subject_providers.dart  
+    │   ├── subject_providers.dart  
+    │   └── user_providers.dart  
+    ├── ui                                                       # ui 화면  
+    │   ├── home                                                 # 앱의 첫 진입점, 홈화면  
+    │   │   ├── home_page.dart  
+    │   │   └── widgets  
+    │   │       └── weather_box.dart  
+    │   ├── layout  
+    │   │   └── main_layout.dart  
+    │   ├── login                                                # 로그인 화면  
+    │   │   └── login_page.dart  
+    │   ├── mypage                                               # 마이페이지  
+    │   │   └── mypage_page.dart  
+    │   ├── register                                             # 회원 가입  
+    │   │   └── register_page.dart  
+    │   ├── splash                                               # 스플래쉬 화면  
+    │   │   └── splash_page.dart  
+    │   ├── subject_post                                         # 주제별 렌더링  
+    │   │   └── subject_post_page.dart  
+    │   ├── subject_search                                       # 주제 검색  
+    │   │   └── subject_search_page.dart  
+    │   ├── weather_post                                         # 날씨별 렌더링  
+    │   │   └── weather_post_page.dart  
+    │   ├── widgets  
+    │   │   └── post_card.dart  
+    │   └── write_post                                           # 그림일기 작성  
+    │       ├── widgets  
+    │       │   ├── diary_input_field.dart  
+    │       │   ├── hint_text.dart  
+    │       │   ├── section_title.dart  
+    │       │   └── weather_button.dart  
+    │       ├── write_post_page.dart  
+    │       └── write_post_view_model.dart  
+    └── viewmodels                                               # 뷰모델 모음  
+        ├── auth_view_model.dart  
+        ├── post_view_model.dart  
+        ├── recommend_subject_view_model.dart  
+        ├── subject_view_model.dart  
+        └── user_view_model.dart  
 
-```
+</details>
 
-## 🛠️ 프로젝트 설치 및 실행 방법
+
+# 🛠️ 프로젝트 설치 및 실행 방법
 
 ## Git 저장소 클론
 
