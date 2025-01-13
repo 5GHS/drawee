@@ -18,6 +18,14 @@ class CommentDTO {
       userId: json['userId'] as String,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content,
+      'createdAt': createdAt.toIso8601String(),
+      'userId': userId,
+    };
+  }
 }
 
 class PostDTO {
@@ -63,6 +71,21 @@ class PostDTO {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'comments': comments.map((comment) => comment.toJson()).toList(),
+      'content': content,
+      'userId': userId,
+      'title': title,
+      'imageUrl': imageUrl,
+      'subjectId': subjectId,
+      'weather': weather,
+      'likes': likes,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
+
   Post toEntity() {
     return Post(
       postId: id,
@@ -81,6 +104,27 @@ class PostDTO {
       weather: weather,
       likes: likes,
       createdAt: createdAt,
+    );
+  }
+
+  factory PostDTO.fromEntity(Post post) {
+    return PostDTO(
+      id: post.postId, // TODO: postId 체크 새로 발급받나?
+      comments: post.comments
+          .map((comment) => CommentDTO(
+                content: comment.content,
+                createdAt: comment.createdAt,
+                userId: comment.userId,
+              ))
+          .toList(),
+      content: post.content,
+      userId: post.userId,
+      title: post.title,
+      imageUrl: post.imageUrl,
+      subjectId: post.subjectId,
+      weather: post.weather,
+      likes: post.likes,
+      createdAt: post.createdAt,
     );
   }
 }

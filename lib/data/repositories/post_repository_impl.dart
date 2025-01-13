@@ -1,4 +1,5 @@
 import 'package:drawee/data/data_sources/post_data_source.dart';
+import 'package:drawee/data/dto/post_dto.dart';
 import 'package:drawee/domain/entities/post.dart';
 import 'package:drawee/domain/repositories/post_repository.dart';
 
@@ -27,36 +28,25 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<void> createPost(Post post) async {
-    final data = {
-      'content': post.content,
-      'userId': post.userId,
-      'title': post.title,
-      'imageUrl': post.imageUrl,
-      'subjectId': post.subjectId,
-      'weather': post.weather,
-      'likes': post.likes, // 어짜피 0
-      'createdAt': post.createdAt.toIso8601String(),
-      'comments': post.comments // 어짜피 []
-    };
-    await _postDataSource.createPost(data);
+  Future<bool> createPost(Post post) async {
+    final dto = PostDTO.fromEntity(post);
+    return await _postDataSource.createPost(dto.toJson());
   }
 
   @override
-  Future<void> updatePost(Post post) async {
+  Future<bool> updatePost(Post post) async {
     final data = {
       'content': post.content,
       'title': post.title,
       'imageUrl': post.imageUrl,
       'weather': post.weather,
-      // 업데이트 시에는 일부 필드만 변경 가능하도록 제한
     };
-    await _postDataSource.updatePost(post.postId, data);
+    return await _postDataSource.updatePost(post.postId, data);
   }
 
   @override
-  Future<void> deletePost(String postId) async {
-    await _postDataSource.deletePost(postId);
+  Future<bool> deletePost(String postId) async {
+    return await _postDataSource.deletePost(postId);
   }
 
   @override
