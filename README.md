@@ -165,6 +165,7 @@ drawee는 사용자가 매일 주어지는 공통 주제에 따라 그림과 글
 ## Git 저장소 클론
 
 `$ git clone https://github.com/5GHS/drawee.git`
+<br>
 `$ cd drawee`
 
 ## 의존성 설치
