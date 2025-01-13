@@ -90,19 +90,9 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
           await ref.read(getSubjectsUsecaseProvider).execute(query);
 
       // topic 기준으로 중복 제거
-      final uniqueSubjects = subjects
-          .fold<Map<String, Subject>>(
-            {},
-            (map, subject) {
-              if (!map.containsKey(subject.topic)) {
-                map[subject.topic] = subject;
-              }
-              return map;
-            },
-          )
-          .values
-          .toList();
-
+      final uniqueSubjects = {
+        for (var subject in subjects) subject.topic: subject
+      }.values.toList();
       return uniqueSubjects;
     });
   }
