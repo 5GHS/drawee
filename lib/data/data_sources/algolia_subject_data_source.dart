@@ -22,11 +22,13 @@ class AlgoliaSubjectDataSource implements SubjectDataSource {
       final snapshot = await _client.searchIndex(request: queryHits);
 
       if (snapshot.hits.isNotEmpty) {
-        return SubjectDTO.fromJson(snapshot.hits.first);
+        return SubjectDTO.fromJson(
+            snapshot.hits.first, snapshot.hits.first.objectID);
       }
       return null;
-    } catch (e) {
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
       return null;
     }
   }
@@ -47,9 +49,12 @@ class AlgoliaSubjectDataSource implements SubjectDataSource {
 
       final snapshot = await _client.searchIndex(request: queryHits);
 
-      return snapshot.hits.map((hit) => SubjectDTO.fromJson(hit)).toList();
-    } catch (e) {
+      return snapshot.hits
+          .map((hit) => SubjectDTO.fromJson(hit, hit.objectID))
+          .toList();
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
       return [];
     }
   }
