@@ -1,4 +1,5 @@
 import 'package:drawee/data/data_sources/subject_data_source.dart';
+import 'package:drawee/data/dto/subject_dto.dart';
 import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/domain/repositories/subject_repository.dart';
 
@@ -7,10 +8,10 @@ class SubjectRepositoryImpl implements SubjectRepository {
 
   SubjectRepositoryImpl(this._subjectDataSource);
 
-  // subjectId와 일치하는 Subject 객체를 찾는 함수
+  // query와 일치하는 Subject 객체를 찾는 함수
   @override
-  Future<Subject?> getSubject(String subjectId) async {
-    final dto = await _subjectDataSource.getSubject(subjectId);
+  Future<Subject?> getSubject(String query) async {
+    final dto = await _subjectDataSource.getSubject(query);
     if (dto == null) return null;
     return dto.toEntity();
   }
@@ -20,5 +21,15 @@ class SubjectRepositoryImpl implements SubjectRepository {
   Future<List<Subject>> getSubjects(String query) async {
     final dtos = await _subjectDataSource.getSubjects(query);
     return dtos.map((dto) => dto.toEntity()).toList();
+  }
+
+  @override
+  Future<void> createSubject(SubjectDTO subject) {
+    final dto = SubjectDTO(
+      postsIds: subject.postsIds,
+      topic: subject.topic,
+      subjectId: subject.subjectId,
+    );
+    return _subjectDataSource.createSubject(dto);
   }
 }

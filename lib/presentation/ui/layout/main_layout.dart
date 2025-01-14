@@ -8,25 +8,17 @@ import 'package:drawee/presentation/ui/mypage/mypage_page.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MainLayout extends StatefulWidget {
-  final int initialIndex;
-
-  const MainLayout({Key? key, this.initialIndex = 0}) : super(key: key);
+  const MainLayout({super.key});
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  late int _selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialIndex;
-  }
+  int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(),
     const WeatherPostPage(),
     const WritePostPage(),
     const SubjectPostPage(),

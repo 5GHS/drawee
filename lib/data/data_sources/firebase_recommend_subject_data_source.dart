@@ -14,7 +14,10 @@ class FirebaseRecommendSubjectDataSource implements RecommendSubjectDataSource {
         .doc("$subjectIndex")
         .get();
     if (doc.exists) {
-      return RecommendSubjectDTO.fromJson(doc.data()!, int.parse(doc.id));
+      return RecommendSubjectDTO.fromJson(
+        doc.data()!,
+        int.parse(doc.id),
+      );
     } else {
       return null;
     }

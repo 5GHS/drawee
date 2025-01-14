@@ -1,5 +1,3 @@
-import 'package:drawee/data/data_sources/subject_data_source_impl.dart';
-import 'package:drawee/data/dto/subject_dto.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

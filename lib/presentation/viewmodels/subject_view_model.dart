@@ -50,8 +50,8 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
   }
 
   // 주제 검색
-  Future<Subject?> getSubject(String subjectId) async {
-    final result = await ref.read(getSubjectUsecaseProvider).execute(subjectId);
+  Future<Subject?> getSubject(String query) async {
+    final result = await ref.read(getSubjectUsecaseProvider).execute(query);
     return result;
   }
 }
