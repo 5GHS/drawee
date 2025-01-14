@@ -54,6 +54,11 @@ class SubjectViewModel extends AsyncNotifier<List<Subject>> {
     final result = await ref.read(getSubjectUsecaseProvider).execute(subjectId);
     return result;
   }
+
+  Future<void> createSubject(String topic) async {
+    final result = await ref.read(createSubjectUsecaseProvider).execute(topic);
+    return result;
+  }
 }
 
 final subjectViewModelProvider =

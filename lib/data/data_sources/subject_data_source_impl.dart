@@ -52,8 +52,16 @@ class SubjectDataSourceImpl implements SubjectDataSource {
   }
 
   @override
-  Future<void> createSubject(SubjectDTO subject) async {
+  Future<void> createSubject(String topic) async {
     try {
+      final subjectRef = await _firestore.collection('subjects').doc();
+      final String id = subjectRef.id;
+      await subjectRef.set({
+        'subjectId': id,
+        'topic': topic,
+        'postsIds': [],
+      });
+
       final _client = SearchClient(
         appId: const String.fromEnvironment('ALGOLIA_APP_ID'),
         apiKey: const String.fromEnvironment('ALGOLIA_API_KEY'),
@@ -61,12 +69,11 @@ class SubjectDataSourceImpl implements SubjectDataSource {
 
       await _client.addOrUpdateObject(
         indexName: 'subjects',
-        objectID: subject.subjectId,
+        objectID: id,
         body: {
-          'objectID': subject.subjectId,
-          'subjectId': subject.subjectId,
-          'topic': subject.topic,
-          'postsIds': subject.postsIds,
+          'subjectId': id,
+          'topic': topic,
+          'postsIds': [],
         },
       );
     } catch (e, stackTrace) {

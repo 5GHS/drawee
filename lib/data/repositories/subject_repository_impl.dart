@@ -24,12 +24,7 @@ class SubjectRepositoryImpl implements SubjectRepository {
   }
 
   @override
-  Future<void> createSubject(SubjectDTO subject) {
-    final dto = SubjectDTO(
-      postsIds: subject.postsIds,
-      topic: subject.topic,
-      subjectId: subject.subjectId,
-    );
-    return _subjectDataSource.createSubject(dto);
+  Future<void> createSubject(String topic) {
+    return _subjectDataSource.createSubject(topic);
   }
 }
