@@ -59,6 +59,7 @@ async function setSubjectsData() {
     if (!!snapshot) {
       snapshot.forEach((element) => {
         const record = {
+          objectId: element.id,
           topic: element.data().topic,
           postsIds: element.data().postsIds,
         };

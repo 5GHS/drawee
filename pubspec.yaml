@@ -19,7 +19,7 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.5.2
   flutter_riverpod: ^2.6.1
-  pro_image_editor: ^7.5.0
+  pro_image_editor: ^7.6.0
   algoliasearch: ^1.28.3
   convert: ^3.1.2
   http: ^1.2.2

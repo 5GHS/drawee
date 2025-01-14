@@ -2,22 +2,47 @@ import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/home/widgets/weather_box.dart';
 import 'package:drawee/presentation/ui/subject_post/subject_post_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
+import 'package:drawee/presentation/ui/widgets/post_is_empty.dart';
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
+import 'package:drawee/presentation/viewmodels/recommend_subject_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
 
-  // GridView.counter에 넣을 그림 목록 (임시 데이터)
-  final List<String> postList = [
-    'assets/images/weather_all.jpeg',
-    'assets/images/weather_all.jpeg',
-    'assets/images/weather_all.jpeg',
-    'assets/images/weather_all.jpeg',
-  ];
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref
+          .read(recommendSubjectViewModelProvider.notifier)
+          .getRecommendSubject();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final recommendAsync = ref.read(recommendSubjectViewModelProvider);
+    final recommendId = recommendAsync.when(
+      data: (data) {
+        if (data == null) {
+          throw Error();
+        }
+        return data.subjectId;
+      },
+      error: (error, stackTrace) => 'error',
+      loading: () => 'loading',
+    );
+    ref.read(postViewModelProvider.notifier).getPostsBySubject(recommendId);
+    final postsAsync = ref.read(postViewModelProvider);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -31,7 +56,9 @@ class HomePage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListView(
             children: [
+              // ------------------------------
               // 제목 1 - 마음 날씨별 보기
+              // ------------------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -71,7 +98,9 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
+              // ------------------------------
               // 날씨 박스
+              // ------------------------------
               const Row(
                 children: [
                   WeatherBox('전체', 'assets/images/weather_all.jpeg'),
@@ -96,7 +125,9 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 24,
               ),
+              // ------------------------------
               // 제목 2 - 오늘의 주제 보기
+              // ------------------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -134,73 +165,147 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              // TODO : 오늘의 주제 변수로 변경
-              const Text(
-                '#오늘의 주제',
-                style: TextStyle(
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: AppColors.green,
+              // 오늘의 주제로 작성한 게시글을 보여주는 탭
+              recommendAsync.when(
+                data: (data) {
+                  if (data == null) {
+                    return const Text(
+                      '오류가 발생하였습니다',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: AppColors.darkGray,
+                      ),
+                    );
+                  }
+                  return Text(
+                    '# ${data.topic}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: AppColors.green,
+                    ),
+                  );
+                },
+                error: (error, stackTrace) => const Text(
+                  '오류가 발생하였습니다',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: AppColors.darkGray,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 16,
+                loading: () => const Text(
+                  '로딩 중...',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: AppColors.darkGray,
+                  ),
+                ),
               ),
               // 주제별 아이템
               Container(
                 width: double.infinity,
                 height: 330,
                 alignment: Alignment.center,
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 0.75,
-                  children: postList.map(
-                    (String path) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                  image: AssetImage(path),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
+                child: postsAsync.when(
+                  data: (data) {
+                    if (data.isEmpty) {
+                      return const PostIsEmpty();
+                    }
+                    return Column(
+                      children: [
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.75,
+                            children: data.map((element) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: NetworkImage(element.imageUrl),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  // 게시글 제목
+                                  Text(
+                                    element.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: AppColors.black,
+                                    ),
+                                  ),
+                                  // 게시글 작성자
+                                  Text(
+                                    element.userId,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: AppColors.darkGray,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
                           ),
-                          const SizedBox(
-                            height: 12,
+                        ),
+                      ],
+                    );
+                  },
+                  // 예외 처리
+                  error: (error, stackTrace) => Container(),
+                  // 로딩 중
+                  loading: () => Container(
+                    alignment: Alignment.center,
+                    width: double.infinity,
+                    height: 300,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          width: 0.7,
+                          color: AppColors.darkGray,
+                        )),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: AppColors.darkGray,
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          '로딩 중...',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            color: AppColors.darkGray,
                           ),
-                          // 게시글 제목
-                          const Text(
-                            '제목',
-                            style: TextStyle(
-                              fontFamily: 'Pretendard',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: AppColors.black,
-                            ),
-                          ),
-                          // 게시글 작성자
-                          const Text(
-                            '작성자',
-                            style: TextStyle(
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                color: AppColors.darkGray),
-                          ),
-                        ],
-                      );
-                    },
-                  ).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
