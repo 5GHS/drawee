@@ -18,7 +18,7 @@ class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
+    const HomePage(),
     const WeatherPostPage(),
     const WritePostPage(),
     const SubjectPostPage(),

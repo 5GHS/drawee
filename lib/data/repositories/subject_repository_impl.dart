@@ -7,10 +7,10 @@ class SubjectRepositoryImpl implements SubjectRepository {
 
   SubjectRepositoryImpl(this._subjectDataSource);
 
-  // query와 일치하는 Subject 객체를 찾는 함수
+  // subjectId와 일치하는 Subject 객체를 찾는 함수
   @override
-  Future<Subject?> getSubject(String query) async {
-    final dto = await _subjectDataSource.getSubject(query);
+  Future<Subject?> getSubject(String subjectId) async {
+    final dto = await _subjectDataSource.getSubject(subjectId);
     if (dto == null) return null;
     return dto.toEntity();
   }
