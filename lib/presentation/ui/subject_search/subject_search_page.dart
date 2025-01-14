@@ -16,6 +16,7 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
   Timer? _debounce;
   final textEditingController = TextEditingController();
 
+  // 오늘의 주제 조회
   @override
   void initState() {
     super.initState();
@@ -44,7 +45,9 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ------------------
                 // 검색창
+                // ------------------
                 Center(
                   child: Container(
                     padding: const EdgeInsets.only(
@@ -71,8 +74,9 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                               hintStyle: TextStyle(color: AppColors.darkGray),
                             ),
                             onChanged: (query) {
-                              if (_debounce?.isActive ?? false)
+                              if (_debounce?.isActive ?? false) {
                                 _debounce?.cancel();
+                              }
                               _debounce =
                                   Timer(const Duration(milliseconds: 300), () {
                                 if (textEditingController.text.isNotEmpty &&
@@ -92,9 +96,7 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                         ),
                         // 검색 버튼
                         GestureDetector(
-                          onTap: () {
-                            print('tap');
-                          },
+                          onTap: () {},
                           child: Container(
                             width: 50,
                             height: 40,
@@ -112,7 +114,10 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                // 검색 결과 리스트뷰
+                // ------------------
+                // 검색 결과
+                // ------------------
+                // 제목
                 const Text(
                   '검색 결과',
                   style: TextStyle(
@@ -133,12 +138,21 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              '# ${subjects[index].topic}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                                color: AppColors.green,
+                            child: GestureDetector(
+                              // 주제를 선택하면 topic과 subjectId를 pop으로 반환
+                              onTap: () {
+                                Navigator.pop(context, {
+                                  'topic': subjects[index].topic,
+                                  'subjectId': subjects[index].subjectId,
+                                });
+                              },
+                              child: Text(
+                                '# ${subjects[index].topic}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  color: AppColors.green,
+                                ),
                               ),
                             ),
                           );
