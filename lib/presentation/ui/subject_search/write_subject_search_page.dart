@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -131,36 +132,115 @@ class _WriteSubjectSearchPageState
                 // 검색 결과 리스트
                 subjectsAsync.when(
                   data: (subjects) {
-                    return SizedBox(
-                      width: double.infinity,
-                      height: 500,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        itemCount: subjects.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: GestureDetector(
-                              // 주제를 선택하면 topic과 subjectId를 pop으로 반환
-                              onTap: () {
-                                Navigator.pop(context, {
-                                  'topic': subjects[index].topic,
-                                  'subjectId': subjects[index].subjectId,
-                                });
-                              },
-                              child: Text(
-                                '# ${subjects[index].topic}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                  color: AppColors.green,
-                                ),
+                    if (subjects.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              showCupertinoDialog(
+                                context: context,
+                                builder: (context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text('새 주제 만들기'),
+                                    content: Text(textEditingController.text),
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
+                                        isDefaultAction: false,
+                                        child: const Text(
+                                          '취소',
+                                          style: TextStyle(
+                                            color: AppColors.darkGray,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      CupertinoDialogAction(
+                                        isDefaultAction: true,
+                                        child: const Text(
+                                          '확인',
+                                          style: TextStyle(
+                                            color: Colors.blueAccent,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          ref
+                                              .read(subjectViewModelProvider
+                                                  .notifier)
+                                              .createSubject(
+                                                  textEditingController.text);
+                                          //Navigator.pop(context);
+                                          //Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: double.infinity,
+                              height: 84,
+                              color: Colors.transparent,
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_box,
+                                    size: 20,
+                                    color: AppColors.green,
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '새 주제로 시작하기',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.darkGray,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    );
+                          ),
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 500,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: subjects.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: GestureDetector(
+                                // 주제를 선택하면 topic과 subjectId를 pop으로 반환
+                                onTap: () {
+                                  Navigator.pop(context, {
+                                    'topic': subjects[index].topic,
+                                    'subjectId': subjects[index].subjectId,
+                                  });
+                                },
+                                child: Text(
+                                  '# ${subjects[index].topic}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                    color: AppColors.green,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
                   },
                   error: (error, stack) {
                     return const Padding(
