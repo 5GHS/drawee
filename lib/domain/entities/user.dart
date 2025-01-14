@@ -14,14 +14,18 @@ class AppUser {
   });
 
   AppUser copyWith({
+    String? id,
     String? imgUrl,
+    String? name,
+    List<String>? likedPostsIds,
+    List<String>? writtenPostsIds,
   }) {
     return AppUser(
-      id: id,
+      id: id ?? this.id,
       imgUrl: imgUrl ?? this.imgUrl,
-      likedPostsIds: likedPostsIds,
-      name: name,
-      writtenPostsIds: writtenPostsIds,
+      likedPostsIds: likedPostsIds ?? this.likedPostsIds,
+      name: name ?? this.name,
+      writtenPostsIds: writtenPostsIds ?? this.writtenPostsIds,
     );
   }
 }

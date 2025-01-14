@@ -26,10 +26,13 @@ class UserViewModel extends AsyncNotifier<UserState> {
     state = AsyncValue.data(UserState(user: user));
   }
 
-  Future<void> updateUser(String uid, String imgUrl) async {
+  Future<void> updateUser(String uid, {String? imgUrl, String? name}) async {
     final user = await ref.read(getUserUseCaseProvider).execute(uid);
     if (user != null) {
-      final updatedUser = user.copyWith(imgUrl: imgUrl);
+      final updatedUser = user.copyWith(
+        imgUrl: imgUrl ?? user.imgUrl,
+        name: name ?? user.name,
+      );
       await ref.read(updateUserUseCaseProvider).execute(updatedUser);
       state = AsyncValue.data(UserState(user: updatedUser));
     } else {
