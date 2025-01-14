@@ -115,4 +115,15 @@ class FirebasePostDataSource implements PostDataSource {
       return [];
     }
   }
+
+  @override
+  Future<List<PostDTO>> getPostsByIds(List<String> postIds) async {
+    final snapshot = await _firestore
+        .collection('posts')
+        .where(FieldPath.documentId, whereIn: postIds)
+        .get();
+    return snapshot.docs
+        .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
+        .toList();
+  }
 }
