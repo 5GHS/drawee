@@ -30,7 +30,7 @@ class _MainLayoutState extends State<MainLayout> {
     const WeatherPostPage(),
     const WritePostPage(),
     const SubjectPostPage(),
-    const MypagePage(),
+    MypagePage(),
   ];
 
 // TODO : 디자인 디테일 잡아야함

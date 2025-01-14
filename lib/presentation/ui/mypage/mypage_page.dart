@@ -1,12 +1,29 @@
+import 'dart:io';
+
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/viewmodels/auth_view_model.dart';
 import 'package:drawee/presentation/viewmodels/user_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+
+final imageProvider = StateProvider<File?>((ref) {
+  return null;
+});
 
 class MypagePage extends ConsumerWidget {
-  const MypagePage({super.key});
+  MypagePage({super.key});
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage(WidgetRef ref, ImageSource source) async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: source); // 갤러리에서 선택 또는 사진 찍기 모두 지원하도록
+    if (pickedFile == null) return; // 이미지 선택하지 않으면 종료
+    final originalImage = File(pickedFile.path); // 선택된 이미지 파일
+    ref.read(imageProvider.notifier).update((state) => originalImage);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +50,17 @@ class MypagePage extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: AppColors.lightGray)),
                   child: ListTile(
-                    leading: const CircleAvatar(), // TODO: user Img 삽입 필요
+                    leading: GestureDetector(
+                      onTap: () => _pickImage(ref, ImageSource.gallery),
+                      child: CircleAvatar(
+                        backgroundImage: ref.watch(imageProvider) != null
+                            ? FileImage(ref.watch(imageProvider)!)
+                            : null,
+                        child: ref.watch(imageProvider) == null
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                    ),
                     title: Text(
                       userState.user?.name ?? "",
                       style: const TextStyle(
