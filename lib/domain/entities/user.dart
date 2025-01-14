@@ -12,4 +12,16 @@ class AppUser {
     required this.name,
     required this.writtenPostsIds,
   });
+
+  AppUser copyWith({
+    String? imgUrl,
+  }) {
+    return AppUser(
+      id: id,
+      imgUrl: imgUrl ?? this.imgUrl,
+      likedPostsIds: likedPostsIds,
+      name: name,
+      writtenPostsIds: writtenPostsIds,
+    );
+  }
 }
