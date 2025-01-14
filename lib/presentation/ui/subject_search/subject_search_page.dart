@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
-import 'package:drawee/constant/text_pattern.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,10 +77,8 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                                 _debounce?.cancel();
                               }
                               _debounce =
-                                  Timer(const Duration(milliseconds: 300), () {
-                                if (textEditingController.text.isNotEmpty &&
-                                    textPattern
-                                        .hasMatch(textEditingController.text)) {
+                                  Timer(const Duration(milliseconds: 500), () {
+                                if (textEditingController.text.isNotEmpty) {
                                   ref
                                       .read(subjectViewModelProvider.notifier)
                                       .getSubjects(query);
