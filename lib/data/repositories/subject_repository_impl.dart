@@ -1,5 +1,4 @@
 import 'package:drawee/data/data_sources/subject_data_source.dart';
-import 'package:drawee/data/dto/subject_dto.dart';
 import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/domain/repositories/subject_repository.dart';
 
