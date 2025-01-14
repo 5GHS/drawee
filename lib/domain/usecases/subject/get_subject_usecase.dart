@@ -6,7 +6,7 @@ class GetSubjectUsecase {
 
   GetSubjectUsecase(this._repository);
 
-  Future<Subject?> execute(String query) {
-    return _repository.getSubject(query);
+  Future<Subject?> execute(String subjectId) {
+    return _repository.getSubject(subjectId);
   }
 }
