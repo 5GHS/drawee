@@ -8,13 +8,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 
-class HomePage extends ConsumerWidget {
-  HomePage({super.key});
+class HomePage extends ConsumerStatefulWidget {
+  const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(recommendSubjectViewModelProvider.notifier).getRecommendSubject();
-    var recommendAsync = ref.read(recommendSubjectViewModelProvider);
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref
+          .read(recommendSubjectViewModelProvider.notifier)
+          .getRecommendSubject();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final recommendAsync = ref.read(recommendSubjectViewModelProvider);
     final recommendId = recommendAsync.when(
       data: (data) {
         if (data == null) {
@@ -41,7 +55,9 @@ class HomePage extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListView(
             children: [
+              // ------------------------------
               // 제목 1 - 마음 날씨별 보기
+              // ------------------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -81,7 +97,9 @@ class HomePage extends ConsumerWidget {
               const SizedBox(
                 height: 16,
               ),
+              // ------------------------------
               // 날씨 박스
+              // ------------------------------
               const Row(
                 children: [
                   WeatherBox('전체', 'assets/images/weather_all.jpeg'),
@@ -106,7 +124,9 @@ class HomePage extends ConsumerWidget {
               const SizedBox(
                 height: 24,
               ),
+              // ------------------------------
               // 제목 2 - 오늘의 주제 보기
+              // ------------------------------
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -144,7 +164,7 @@ class HomePage extends ConsumerWidget {
                   ),
                 ],
               ),
-              // 오늘의 주제
+              // 오늘의 주제로 작성한 게시글을 보여주는 탭
               recommendAsync.when(
                 data: (data) {
                   if (data == null) {
@@ -183,9 +203,6 @@ class HomePage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 16,
-              ),
               // 주제별 아이템
               Container(
                 width: double.infinity,
@@ -194,55 +211,86 @@ class HomePage extends ConsumerWidget {
                 child: postsAsync.when(
                   data: (data) {
                     if (data.isEmpty) {
-                      return const Text('받아올 데이터가 null값입니다');
+                      return const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: AppColors.darkGray,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '아직 게시글이 없습니다.\n첫 번째 게시글을 작성해보세요!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.darkGray,
+                            ),
+                          ),
+                        ],
+                      );
                     }
-                    return GridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.75,
-                      children: data.map((element) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image: NetworkImage(element.imageUrl),
-                                    fit: BoxFit.cover,
+                    return Column(
+                      children: [
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.75,
+                            children: data.map((element) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: NetworkImage(element.imageUrl),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            // 게시글 제목
-                            Text(
-                              element.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
-                                color: AppColors.black,
-                              ),
-                            ),
-                            // 게시글 작성자
-                            Text(
-                              element.userId,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 12,
-                                color: AppColors.darkGray,
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                                  const SizedBox(
+                                    height: 12,
+                                  ),
+                                  // 게시글 제목
+                                  Text(
+                                    element.title,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: AppColors.black,
+                                    ),
+                                  ),
+                                  // 게시글 작성자
+                                  Text(
+                                    element.userId,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                      color: AppColors.darkGray,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
                     );
                   },
+                  // 예외 처리
                   error: (error, stackTrace) => Container(),
+                  // 로딩 중
                   loading: () => Container(
                     alignment: Alignment.center,
                     width: double.infinity,
