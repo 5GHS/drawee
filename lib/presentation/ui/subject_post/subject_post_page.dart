@@ -1,4 +1,5 @@
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/subject_post/widgets/search_bar_widget.dart';
 import 'package:drawee/presentation/ui/subject_search/subject_search_page.dart';
 import 'package:drawee/presentation/ui/widgets/post_card.dart';
 import 'package:drawee/presentation/ui/widgets/post_is_empty.dart';
@@ -16,9 +17,12 @@ class SubjectPostPage extends ConsumerStatefulWidget {
 
 class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
   String topic = '';
+
   @override
   void initState() {
     super.initState();
+    // 페이지를 열 때 오늘의 주제와 함께
+    // 게시글 목록을 보여주도록 초기화
     Future.microtask(
       () async {
         await ref
@@ -45,6 +49,7 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.white,
         title: const Text(
           '주제별 보기',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -65,7 +70,6 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
                     MaterialPageRoute(
                       builder: (context) => const SubjectSearchPage(),
                     ));
-                print(result['subjectId']);
                 // 결과가 있을 경우 topic과 posts 업데이트
                 if (result != null) {
                   await ref
@@ -76,39 +80,7 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
                   });
                 }
               },
-              child: Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  top: 2,
-                  bottom: 2,
-                ),
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: AppColors.lightGray,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '관심있는 주제를 검색해보세요',
-                      style: TextStyle(
-                        color: AppColors.darkGray,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 50,
-                      height: 40,
-                      child: Icon(
-                        Icons.search,
-                        color: AppColors.darkGray,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: const SearchBarWidget(),
             ),
             const SizedBox(height: 16),
             // ------------------
@@ -139,7 +111,7 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
               ),
             ),
             // ------------------
-            // 주제별 게시글
+            // 주제별 post 목록
             // ------------------
             Expanded(
               child: postsAsync.when(

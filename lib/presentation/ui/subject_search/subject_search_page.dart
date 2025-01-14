@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/constant/text_pattern.dart';
-import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +16,7 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
   Timer? _debounce;
   final textEditingController = TextEditingController();
 
+  // 오늘의 주제 조회
   @override
   void initState() {
     super.initState();
@@ -45,7 +45,9 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ------------------
                 // 검색창
+                // ------------------
                 Center(
                   child: Container(
                     padding: const EdgeInsets.only(
@@ -94,9 +96,7 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                         ),
                         // 검색 버튼
                         GestureDetector(
-                          onTap: () {
-                            print('tap');
-                          },
+                          onTap: () {},
                           child: Container(
                             width: 50,
                             height: 40,
@@ -114,7 +114,10 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                // 검색 결과 리스트뷰
+                // ------------------
+                // 검색 결과
+                // ------------------
+                // 제목
                 const Text(
                   '검색 결과',
                   style: TextStyle(
