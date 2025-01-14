@@ -9,4 +9,5 @@ abstract interface class PostRepository {
   Future<bool> createPost(Post post);
   Future<bool> updatePost(Post post);
   Future<bool> deletePost(String postId);
+  Future<List<Post>> getPostsByIds(List<String> postIds);
 }

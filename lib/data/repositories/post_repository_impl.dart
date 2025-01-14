@@ -60,4 +60,10 @@ class PostRepositoryImpl implements PostRepository {
     final dtos = await _postDataSource.getPostsByUserId(userId);
     return dtos.map((dto) => dto.toEntity()).toList();
   }
+
+  @override
+  Future<List<Post>> getPostsByIds(List<String> postIds) async {
+    final dtos = await _postDataSource.getPostsByIds(postIds);
+    return dtos.map((dto) => dto.toEntity()).toList();
+  }
 }
