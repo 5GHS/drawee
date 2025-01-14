@@ -41,8 +41,6 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    final recommendSubject = ref.watch(recommendSubjectViewModelProvider);
-
     final postsAsync = ref.watch(postViewModelProvider);
 
     return Scaffold(
@@ -62,17 +60,20 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
             // ------------------
             GestureDetector(
               onTap: () async {
-                final newTopic =
-                    await Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return const SubjectSearchPage();
-                  },
-                ));
-                if (newTopic != null) {
+                final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SubjectSearchPage(),
+                    ));
+                print(result['subjectId']);
+                // 결과가 있을 경우 topic과 posts 업데이트
+                if (result != null) {
+                  await ref
+                      .read(postViewModelProvider.notifier)
+                      .getPostsBySubject(result['subjectId']);
                   setState(() {
-                    topic = newTopic;
+                    topic = result['topic'];
                   });
-                  print('newTopic: $topic');
                 }
               },
               child: Container(
@@ -100,7 +101,7 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
                     SizedBox(
                       width: 50,
                       height: 40,
-                      child: const Icon(
+                      child: Icon(
                         Icons.search,
                         color: AppColors.darkGray,
                       ),

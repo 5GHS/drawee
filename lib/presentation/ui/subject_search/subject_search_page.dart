@@ -72,8 +72,9 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                               hintStyle: TextStyle(color: AppColors.darkGray),
                             ),
                             onChanged: (query) {
-                              if (_debounce?.isActive ?? false)
+                              if (_debounce?.isActive ?? false) {
                                 _debounce?.cancel();
+                              }
                               _debounce =
                                   Timer(const Duration(milliseconds: 300), () {
                                 if (textEditingController.text.isNotEmpty &&
@@ -135,13 +136,12 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             child: GestureDetector(
+                              // 주제를 선택하면 topic과 subjectId를 pop으로 반환
                               onTap: () {
-                                ref
-                                    .read(postViewModelProvider.notifier)
-                                    .getPostsBySubject(
-                                        subjects[index].subjectId);
-                                print('return ${subjects[index].topic}');
-                                Navigator.pop(context, subjects[index].topic);
+                                Navigator.pop(context, {
+                                  'topic': subjects[index].topic,
+                                  'subjectId': subjects[index].subjectId,
+                                });
                               },
                               child: Text(
                                 '# ${subjects[index].topic}',
