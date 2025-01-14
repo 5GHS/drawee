@@ -1,17 +1,23 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SubjectSearchPage extends ConsumerStatefulWidget {
-  const SubjectSearchPage({super.key});
+// 게시글을 작성할 때 사용하는 주제 검색 페이지
+// 주제 생성 기능을 포함합니다
+
+class WriteSubjectSearchPage extends ConsumerStatefulWidget {
+  const WriteSubjectSearchPage({super.key});
 
   @override
-  ConsumerState<SubjectSearchPage> createState() => _SubjectSearchPageState();
+  ConsumerState<WriteSubjectSearchPage> createState() =>
+      _WriteSubjectSearchPageState();
 }
 
-class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
+class _WriteSubjectSearchPageState
+    extends ConsumerState<WriteSubjectSearchPage> {
   Timer? _debounce;
   final textEditingController = TextEditingController();
 
@@ -77,7 +83,7 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                                 _debounce?.cancel();
                               }
                               _debounce =
-                                  Timer(const Duration(milliseconds: 500), () {
+                                  Timer(const Duration(milliseconds: 300), () {
                                 if (textEditingController.text.isNotEmpty) {
                                   ref
                                       .read(subjectViewModelProvider.notifier)
@@ -127,31 +133,78 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                 subjectsAsync.when(
                   data: (subjects) {
                     if (subjects.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 84,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 20,
-                                  color: AppColors.darkGray,
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  '검색 결과가 없습니다.',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.darkGray,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              showCupertinoDialog(
+                                context: context,
+                                builder: (context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text('새 주제 만들기'),
+                                    content: Text(textEditingController.text),
+                                    actions: <CupertinoDialogAction>[
+                                      CupertinoDialogAction(
+                                        isDefaultAction: false,
+                                        child: const Text(
+                                          '취소',
+                                          style: TextStyle(
+                                            color: AppColors.darkGray,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      CupertinoDialogAction(
+                                        isDefaultAction: true,
+                                        child: const Text(
+                                          '확인',
+                                          style: TextStyle(
+                                            color: Colors.blueAccent,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          ref
+                                              .read(subjectViewModelProvider
+                                                  .notifier)
+                                              .createSubject(
+                                                  textEditingController.text);
+                                          //Navigator.pop(context);
+                                          //Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: double.infinity,
+                              height: 84,
+                              color: Colors.transparent,
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_box,
+                                    size: 20,
+                                    color: AppColors.green,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '새 주제로 시작하기',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.darkGray,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

@@ -21,4 +21,9 @@ class SubjectRepositoryImpl implements SubjectRepository {
     final dtos = await _subjectDataSource.getSubjects(query);
     return dtos.map((dto) => dto.toEntity()).toList();
   }
+
+  @override
+  Future<void> createSubject(String topic) {
+    return _subjectDataSource.createSubject(topic);
+  }
 }

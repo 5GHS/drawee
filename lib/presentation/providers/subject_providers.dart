@@ -3,6 +3,7 @@ import 'package:drawee/data/data_sources/subject_data_source_impl.dart';
 import 'package:drawee/data/data_sources/subject_data_source.dart';
 import 'package:drawee/data/repositories/subject_repository_impl.dart';
 import 'package:drawee/domain/repositories/subject_repository.dart';
+import 'package:drawee/domain/usecases/subject/creat_subject_usecase.dart';
 import 'package:drawee/domain/usecases/subject/get_subject_usecase.dart';
 import 'package:drawee/domain/usecases/subject/get_subjects_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,4 +22,8 @@ final getSubjectsUsecaseProvider = Provider<GetSubjectsUsecase>((ref) {
 
 final getSubjectUsecaseProvider = Provider<GetSubjectUsecase>((ref) {
   return GetSubjectUsecase(ref.watch(_subjectRepositoryProvider));
+});
+
+final createSubjectUsecaseProvider = Provider<CreateSubjectUsecase>((ref) {
+  return CreateSubjectUsecase(ref.watch(_subjectRepositoryProvider));
 });
