@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/constant/text_pattern.dart';
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,12 +134,22 @@ class _SubjectSearchPageState extends ConsumerState<SubjectSearchPage> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              '# ${subjects[index].topic}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                                color: AppColors.green,
+                            child: GestureDetector(
+                              onTap: () {
+                                ref
+                                    .read(postViewModelProvider.notifier)
+                                    .getPostsBySubject(
+                                        subjects[index].subjectId);
+                                print('return ${subjects[index].topic}');
+                                Navigator.pop(context, subjects[index].topic);
+                              },
+                              child: Text(
+                                '# ${subjects[index].topic}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  color: AppColors.green,
+                                ),
                               ),
                             ),
                           );

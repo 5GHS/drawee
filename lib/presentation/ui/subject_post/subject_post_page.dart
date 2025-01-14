@@ -25,8 +25,10 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
             .read(recommendSubjectViewModelProvider.notifier)
             .getRecommendSubject();
 
-        // recommendSubject에서 subjectId를 가져와서 getPosts 실행
         ref.read(recommendSubjectViewModelProvider).whenData((data) {
+          setState(() {
+            topic = data?.topic ?? '로딩 중';
+          });
           if (data?.subjectId != null) {
             ref
                 .read(postViewModelProvider.notifier)
@@ -40,10 +42,6 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
   @override
   Widget build(BuildContext context) {
     final recommendSubject = ref.watch(recommendSubjectViewModelProvider);
-    final topic = recommendSubject.whenOrNull(
-          data: (data) => data?.topic,
-        ) ??
-        '로딩 중';
 
     final postsAsync = ref.watch(postViewModelProvider);
 
@@ -63,12 +61,19 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
             // 검색 버튼
             // ------------------
             GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(
+              onTap: () async {
+                final newTopic =
+                    await Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
                     return const SubjectSearchPage();
                   },
                 ));
+                if (newTopic != null) {
+                  setState(() {
+                    topic = newTopic;
+                  });
+                  print('newTopic: $topic');
+                }
               },
               child: Container(
                 alignment: Alignment.centerLeft,
@@ -120,8 +125,8 @@ class _SubjectPostPageState extends ConsumerState<SubjectPostPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: const Color.fromARGB(75, 13, 187, 132)), // 대략 25%
+                border:
+                    Border.all(color: const Color.fromARGB(75, 13, 187, 132)),
               ),
               child: Text(
                 '# $topic',
