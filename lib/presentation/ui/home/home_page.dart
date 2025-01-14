@@ -2,6 +2,7 @@ import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/home/widgets/weather_box.dart';
 import 'package:drawee/presentation/ui/subject_post/subject_post_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
+import 'package:drawee/presentation/ui/widgets/post_is_empty.dart';
 import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:drawee/presentation/viewmodels/recommend_subject_view_model.dart';
 import 'package:flutter/material.dart';
@@ -211,27 +212,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: postsAsync.when(
                   data: (data) {
                     if (data.isEmpty) {
-                      return const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: AppColors.darkGray,
-                            size: 20,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '아직 게시글이 없습니다.\n첫 번째 게시글을 작성해보세요!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.darkGray,
-                            ),
-                          ),
-                        ],
-                      );
+                      return const PostIsEmpty();
                     }
                     return Column(
                       children: [
