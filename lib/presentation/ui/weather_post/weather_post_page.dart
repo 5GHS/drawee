@@ -43,6 +43,14 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
   WeatherType _selectedWeather = WeatherType.all;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref.watch(postViewModelProvider.notifier).getPosts();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final postsAsync = ref.watch(postViewModelProvider);
 
@@ -80,7 +88,9 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
                               _selectedWeather = weather;
                             });
                             if (weather == WeatherType.all) {
-                              ref.read(postViewModelProvider.notifier).build();
+                              ref
+                                  .read(postViewModelProvider.notifier)
+                                  .getPosts();
                             } else {
                               ref
                                   .read(postViewModelProvider.notifier)
@@ -119,6 +129,7 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
             Expanded(
               child: postsAsync.when(
                 data: (posts) {
+                  print(posts.length);
                   if (posts.isEmpty) {
                     return const Center(
                       child: Text('포스트가 없습니다.'),

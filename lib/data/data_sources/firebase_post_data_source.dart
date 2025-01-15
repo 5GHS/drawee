@@ -24,7 +24,11 @@ class FirebasePostDataSource implements PostDataSource {
   @override
   Future<List<PostDTO>> getPosts() async {
     try {
-      final snapshot = await _firestore.collection('posts').get();
+      final snapshot = await _firestore
+          .collection('posts')
+          .orderBy('createdAt', descending: true)
+          .get();
+      print("snapshot.docs: ${snapshot.docs}");
       return snapshot.docs
           .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
@@ -40,6 +44,7 @@ class FirebasePostDataSource implements PostDataSource {
       final snapshot = await _firestore
           .collection('posts')
           .where('weather', isEqualTo: weather)
+          .orderBy('createdAt', descending: true)
           .get();
       return snapshot.docs
           .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
@@ -90,6 +95,7 @@ class FirebasePostDataSource implements PostDataSource {
       final snapshot = await _firestore
           .collection('posts')
           .where('subjectId', isEqualTo: subjectId)
+          .orderBy('createdAt', descending: true)
           .get();
       return snapshot.docs
           .map((doc) => PostDTO.fromJson(doc.data(), doc.id))

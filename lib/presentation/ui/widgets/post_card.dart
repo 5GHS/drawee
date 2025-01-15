@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/constant/colors.dart';
@@ -7,7 +8,7 @@ import 'package:drawee/domain/entities/post.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PostCard extends ConsumerWidget {
-  final Post post;
+  final PostDetail post;
 
   const PostCard({
     super.key,
@@ -16,6 +17,7 @@ class PostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print(post.comments);
     return Container(
       key: ValueKey(post.postId),
       child: Column(
@@ -23,9 +25,11 @@ class PostCard extends ConsumerWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const CircleAvatar(), // TODO: user Img 삽입 필요
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(post.userImageUrl),
+            ), // TODO: user Img 삽입 필요
             title: Text(
-              post.userId, // TODO : user 이름 삽입 필요
+              post.userName, // TODO : user 이름 삽입 필요
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
             subtitle: Text(
@@ -81,7 +85,7 @@ class PostCard extends ConsumerWidget {
                                 75, 13, 187, 132)), // 대략 25%
                       ),
                       child: Text(
-                        "#${post.subjectId}", // TODO: 이것도 subject -> topic으로 변경 필요
+                        "#${post.subjectTopic}", // TODO: 이것도 subject -> topic으로 변경 필요
                         style: const TextStyle(
                           color: AppColors.green,
                           fontSize: 16,
@@ -131,6 +135,57 @@ class PostCard extends ConsumerWidget {
               GestureDetector(
                 onTap: () {
                   // TODO: 댓글 페이지 이동
+                  // Start Generation Here
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // 댓글 목록
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: post.comments.length,
+                              itemBuilder: (context, index) {
+                                final comment = post.comments[index];
+                                return ListTile(
+                                  leading: Icon(Icons.person),
+                                  title: Text(comment.userId),
+                                  subtitle: Text(comment.content),
+                                );
+                              },
+                            ),
+                            // 댓글 입력 필드
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      decoration: const InputDecoration(
+                                        hintText: '댓글을 입력하세요',
+                                      ),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.send),
+                                    onPressed: () {
+                                      // 댓글 전송 로직 추가
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Row(
                   children: [

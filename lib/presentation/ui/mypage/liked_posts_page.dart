@@ -1,3 +1,4 @@
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/presentation/ui/widgets/post_card.dart';
@@ -6,11 +7,13 @@ import 'package:drawee/presentation/providers/post_providers.dart';
 class LikedPostsPage extends ConsumerWidget {
   final List<String> postIds;
 
-  const LikedPostsPage({Key? key, required this.postIds}) : super(key: key);
+  const LikedPostsPage({super.key, required this.postIds});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postsAsync = ref.watch(getPostsByIdsProvider(postIds));
+    ref.watch(postViewModelProvider.notifier).getPostsByIds(postIds);
+
+    final postsAsync = ref.watch(postViewModelProvider);
 
     return Scaffold(
       appBar: AppBar(
