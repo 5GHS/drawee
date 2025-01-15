@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:drawee/presentation/ui/write_post/widgets/hint_text.dart';
 import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -139,49 +140,154 @@ class PostCard extends ConsumerWidget {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
                     builder: (context) {
                       return Padding(
                         padding: EdgeInsets.only(
                           bottom: MediaQuery.of(context).viewInsets.bottom,
                         ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // 댓글 목록
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: post.comments.length,
-                              itemBuilder: (context, index) {
-                                final comment = post.comments[index];
-                                return ListTile(
-                                  leading: Icon(Icons.person),
-                                  title: Text(comment.userId),
-                                  subtitle: Text(comment.content),
-                                );
-                              },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
                             ),
-                            // 댓글 입력 필드
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      decoration: const InputDecoration(
-                                        hintText: '댓글을 입력하세요',
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '댓글',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '(${post.comments.length})',
+                                        style: TextStyle(
+                                            color: AppColors.green,
+                                            fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              // 댓글 목록
+                              Flexible(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: post.comments.length,
+                                  itemBuilder: (context, index) {
+                                    final comment = post.comments[index];
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(comment.userImageUrl),
+                                      ),
+                                      title: Text(
+                                        comment.userName,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      subtitle: Text(comment.content),
+                                    );
+                                  },
+                                ),
+                              ),
+                              // 댓글 입력 필드
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(
+                                      color: AppColors.gray,
+                                      width: 1.0,
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.send),
-                                    onPressed: () {
-                                      // 댓글 전송 로직 추가
-                                    },
-                                  ),
-                                ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        // TODO: 좋아요 누르기
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(6.0),
+                                        child: Container(
+                                          child: Row(children: [
+                                            //SizedBox(width: 2),
+                                            SvgPicture.asset(
+                                                'assets/icon/stamp.svg'),
+                                            Text(
+                                              '참 잘했어요',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                          ]),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            decoration: InputDecoration(
+                                              hintText: '댓글을 남겨보세요',
+                                              hintStyle: hintTextStyle,
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors.gray),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors.gray,
+                                                    width: 1.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        20), // 비활성 상태 테두리
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: AppColors.green,
+                                                    width: 1.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        20), // 활성 상태 테두리
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        //SizedBox(width: 12),
+                                        IconButton(
+                                          icon: SvgPicture.asset(
+                                              'assets/icon/commentSend.svg'),
+                                          onPressed: () {
+                                            // TODO: 댓글 전송 로직 추가
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 30),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -201,7 +307,6 @@ class PostCard extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
           const Divider(
             height: 1,
             color: AppColors.lightGray,
