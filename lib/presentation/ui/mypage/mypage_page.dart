@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/presentation/ui/login/login_page.dart';
 import 'package:drawee/presentation/ui/mypage/liked_posts_page.dart';
 import 'package:drawee/presentation/ui/mypage/written_posts_page.dart';
 import 'package:drawee/presentation/ui/splash/splash_page.dart';
@@ -134,8 +135,52 @@ class MypagePage extends ConsumerWidget {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => SplashPage(),
+                                        builder: (context) => LoginPage(),
                                       ),
+                                    );
+                                  },
+                                ),
+                                CupertinoDialogAction(
+                                  child: Text('회원탈퇴',
+                                      style:
+                                          TextStyle(color: AppColors.onError)),
+                                  onPressed: () {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text('정말로 회원탈퇴 하시겠습니까?'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                              child: Text('취소'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text('확인'),
+                                              onPressed: () async {
+                                                await ref
+                                                    .read(userViewModelProvider
+                                                        .notifier)
+                                                    .deleteUser(
+                                                        userState.user?.id ??
+                                                            '');
+                                                // Ensure all user-related data is cleared
+
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        LoginPage(),
+                                                  ),
+                                                  (route) => false,
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
                                 ),
@@ -232,6 +277,7 @@ class MypagePage extends ConsumerWidget {
                 //   },
                 //   child: const Text('로그아웃'),
                 // ),
+
                 // ElevatedButton(
                 //   onPressed: () {
                 //     ref

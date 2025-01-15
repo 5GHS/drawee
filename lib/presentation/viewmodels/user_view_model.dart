@@ -42,6 +42,7 @@ class UserViewModel extends AsyncNotifier<UserState> {
 
   Future<void> deleteUser(String uid) async {
     await ref.read(deleteUserUseCaseProvider).execute(uid);
+    state = const AsyncValue.data(UserState(user: null));
   }
 }
 
