@@ -101,9 +101,11 @@ class PostViewModel extends AsyncNotifier<List<PostDetail>> {
 
   Future<void> getPostsByIds(List<String> postIds) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => ref.read(getPostsByIdsUseCaseProvider).execute(postIds),
-    );
+    state = await AsyncValue.guard(() async {
+      final posts =
+          await ref.read(getPostsByIdsUseCaseProvider).execute(postIds);
+      return await _convertPostsToPostDetails(posts);
+    });
   }
 
   Future<void> getPostsByWeather(String weather) async {
