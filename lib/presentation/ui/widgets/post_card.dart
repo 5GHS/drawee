@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:drawee/presentation/viewmodels/post_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drawee/constant/colors.dart';
@@ -7,7 +8,7 @@ import 'package:drawee/domain/entities/post.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class PostCard extends ConsumerWidget {
-  final Post post;
+  final PostDetail post;
 
   const PostCard({
     super.key,
@@ -24,9 +25,11 @@ class PostCard extends ConsumerWidget {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const CircleAvatar(), // TODO: user Img 삽입 필요
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(post.userImageUrl),
+            ), // TODO: user Img 삽입 필요
             title: Text(
-              post.userId, // TODO : user 이름 삽입 필요
+              post.userName, // TODO : user 이름 삽입 필요
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
             subtitle: Text(
@@ -82,7 +85,7 @@ class PostCard extends ConsumerWidget {
                                 75, 13, 187, 132)), // 대략 25%
                       ),
                       child: Text(
-                        "#${post.subjectId}", // TODO: 이것도 subject -> topic으로 변경 필요
+                        "#${post.subjectTopic}", // TODO: 이것도 subject -> topic으로 변경 필요
                         style: const TextStyle(
                           color: AppColors.green,
                           fontSize: 16,
