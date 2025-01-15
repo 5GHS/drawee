@@ -18,7 +18,6 @@ class PostCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print(post.comments);
     return Container(
       key: ValueKey(post.postId),
       child: Column(
