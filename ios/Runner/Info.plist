@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>http</string>
+		<string>https</string>
+	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>라인아트로 변경할 사진을 업로드 하기 위해 사진첩 접근 권한을 요청드려요</string>
 	<key>NSCameraUsageDescription</key>
