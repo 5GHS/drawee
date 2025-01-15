@@ -257,7 +257,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                   // 게시글 작성자
                                   Text(
-                                    element.userId,
+                                    element.userName,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w400,
                                       fontSize: 12,

@@ -33,7 +33,12 @@ enum WeatherType {
 }
 
 class WeatherPostPage extends ConsumerStatefulWidget {
-  const WeatherPostPage({super.key});
+  final String? fromHome;
+
+  const WeatherPostPage({
+    super.key,
+    this.fromHome,
+  });
 
   @override
   ConsumerState<WeatherPostPage> createState() => _WeatherPostPageState();
@@ -45,8 +50,28 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.watch(postViewModelProvider.notifier).getPosts();
+      if (widget.fromHome != null) {
+        final selectedWeather = WeatherType.values.firstWhere(
+          (weather) => weather.label == widget.fromHome,
+          orElse: () => WeatherType.all,
+        );
+
+        setState(() {
+          _selectedWeather = selectedWeather;
+        });
+
+        ref
+            .watch(postViewModelProvider.notifier)
+            .getPostsByWeather(selectedWeather.label);
+      } else {
+        setState(() {
+          _selectedWeather = WeatherType.all;
+        });
+
+        ref.read(postViewModelProvider.notifier).getPosts();
+      }
     });
   }
 
