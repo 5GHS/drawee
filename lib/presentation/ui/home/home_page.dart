@@ -1,4 +1,5 @@
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/domain/entities/recommend_subject.dart';
 import 'package:drawee/presentation/ui/home/widgets/weather_box.dart';
 import 'package:drawee/presentation/ui/subject_post/subject_post_page.dart';
 import 'package:drawee/presentation/ui/weather_post/weather_post_page.dart';
@@ -17,32 +18,34 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  late String _recommendId;
+  late AsyncValue<RecommendSubject?> _recommendAsync;
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      ref
-          .read(recommendSubjectViewModelProvider.notifier)
-          .getRecommendSubject();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      _recommendAsync = await ref.watch(recommendSubjectViewModelProvider);
+
+      _recommendId = await _recommendAsync.when(
+        data: (data) {
+          if (data == null) {
+            throw Error();
+          }
+
+          return data.subjectId;
+        },
+        error: (error, stackTrace) => 'error',
+        loading: () => 'loading',
+      );
+      ref.watch(postViewModelProvider.notifier).getPostsBySubject(_recommendId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final recommendAsync = ref.read(recommendSubjectViewModelProvider);
-    final recommendId = recommendAsync.when(
-      data: (data) {
-        if (data == null) {
-          throw Error();
-        }
-        return data.subjectId;
-      },
-      error: (error, stackTrace) => 'error',
-      loading: () => 'loading',
-    );
-    ref.read(postViewModelProvider.notifier).getPostsBySubject(recommendId);
-    final postsAsync = ref.read(postViewModelProvider);
-
+    final postsAsync = ref.watch(postViewModelProvider);
+    final recommendAsync = ref.watch(recommendSubjectViewModelProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
