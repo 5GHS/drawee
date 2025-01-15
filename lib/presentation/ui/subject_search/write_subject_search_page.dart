@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:drawee/constant/colors.dart';
+import 'package:drawee/domain/entities/subject.dart';
 import 'package:drawee/presentation/viewmodels/subject_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -171,8 +172,10 @@ class _WriteSubjectSearchPageState
                                                   .notifier)
                                               .createSubject(
                                                   textEditingController.text);
-                                          //Navigator.pop(context);
-                                          //Navigator.pop(context);
+                                          Navigator.pop(context);
+                                          Navigator.pop(
+                                            context,
+                                          );
                                         },
                                       ),
                                     ],
@@ -222,10 +225,13 @@ class _WriteSubjectSearchPageState
                               child: GestureDetector(
                                 // 주제를 선택하면 topic과 subjectId를 pop으로 반환
                                 onTap: () {
-                                  Navigator.pop(context, {
-                                    'topic': subjects[index].topic,
-                                    'subjectId': subjects[index].subjectId,
-                                  });
+                                  Subject subject = Subject(
+                                    subjectId: subjects[index].subjectId,
+                                    topic: subjects[index].topic,
+                                    postsIds: subjects[index].postsIds,
+                                  );
+
+                                  Navigator.pop(context, subject);
                                 },
                                 child: Text(
                                   '# ${subjects[index].topic}',

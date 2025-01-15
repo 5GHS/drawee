@@ -1485,7 +1485,11 @@ SPEC CHECKSUMS:
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
+<<<<<<< HEAD
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+=======
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+>>>>>>> b8f4d729d09b4999ab50e1b80167106a12c2ad97
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d

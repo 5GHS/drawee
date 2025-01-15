@@ -28,7 +28,7 @@ class FirebasePostDataSource implements PostDataSource {
           .collection('posts')
           .orderBy('createdAt', descending: true)
           .get();
-      print("snapshot.docs: ${snapshot.docs}");
+
       return snapshot.docs
           .map((doc) => PostDTO.fromJson(doc.data(), doc.id))
           .toList();
