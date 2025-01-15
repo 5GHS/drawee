@@ -1,5 +1,6 @@
 import 'package:drawee/constant/colors.dart';
 import 'package:drawee/presentation/ui/layout/main_layout.dart';
+import 'package:drawee/presentation/ui/login/widgets/privacy_policy.dart';
 import 'package:drawee/presentation/ui/register/register_page.dart';
 import 'package:drawee/presentation/viewmodels/auth_view_model.dart';
 import 'package:drawee/presentation/viewmodels/user_view_model.dart';
@@ -150,6 +151,8 @@ class LoginPage extends ConsumerWidget {
                     ),
                   ),
                 ),
+                // 개인정보 처리방침
+                const PrivacyPolicy(),
               ],
             ),
           ),
