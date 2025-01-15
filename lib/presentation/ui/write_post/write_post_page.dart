@@ -129,7 +129,12 @@ class _WritePageState extends ConsumerState<WritePostPage> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: AppColors.white,
-        appBar: AppBar(title: Text('새 그림 일기')),
+        appBar: AppBar(
+          title: Text(
+            '새 그림 일기',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
         body: Form(
           key: formKey,
           child: Padding(

@@ -12,6 +12,8 @@ import 'package:drawee/domain/usecases/post/update_post_usecase.dart';
 import 'package:drawee/domain/usecases/post/delete_post_usecase.dart';
 import 'package:drawee/domain/usecases/post/get_posts_by_subject_id_usecase.dart';
 import 'package:drawee/domain/usecases/post/get_posts_by_user_id_usecase.dart';
+import 'package:drawee/domain/usecases/post/get_posts_by_id_usecase.dart';
+import 'package:drawee/domain/entities/post.dart';
 
 final postDataSourceProvider = Provider<PostDataSource>((ref) {
   return FirebasePostDataSource(FirebaseFirestore.instance);
@@ -55,4 +57,19 @@ final getPostsBySubjectIdUseCaseProvider =
 final getPostsByUserIdUseCaseProvider =
     Provider<GetPostsByUserIdUseCase>((ref) {
   return GetPostsByUserIdUseCase(ref.watch(postRepositoryProvider));
+});
+
+final getPostsByIdsUseCaseProvider = Provider<GetPostsByIdsUseCase>((ref) {
+  return GetPostsByIdsUseCase(ref.watch(postRepositoryProvider));
+});
+
+final getPostsByIdsProvider =
+    FutureProvider.family<List<Post>, List<String>>((ref, postIds) async {
+  final postRepository = ref.watch(postRepositoryProvider);
+  try {
+    return await postRepository.getPostsByIds(postIds);
+  } catch (e) {
+    print('Error fetching posts: $e');
+    return [];
+  }
 });
