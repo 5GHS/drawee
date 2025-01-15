@@ -135,7 +135,7 @@ class MypagePage extends ConsumerWidget {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LoginPage(),
+                                        builder: (context) => SplashPage(),
                                       ),
                                     );
                                   },
@@ -167,12 +167,16 @@ class MypagePage extends ConsumerWidget {
                                                         userState.user?.id ??
                                                             '');
                                                 // Ensure all user-related data is cleared
+                                                await ref
+                                                    .read(authViewModelProvider
+                                                        .notifier)
+                                                    .signOut();
 
                                                 Navigator.pushAndRemoveUntil(
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        LoginPage(),
+                                                        SplashPage(),
                                                   ),
                                                   (route) => false,
                                                 );
