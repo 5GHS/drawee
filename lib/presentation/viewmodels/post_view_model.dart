@@ -87,6 +87,7 @@ class PostDetail {
 class PostViewModel extends AsyncNotifier<List<PostDetail>> {
   @override
   Future<List<PostDetail>> build() async {
+    print("build 호출");
     return getPosts();
   }
 
@@ -94,16 +95,15 @@ class PostViewModel extends AsyncNotifier<List<PostDetail>> {
     state = const AsyncValue.loading();
 
     final posts = await ref.read(getPostsUseCaseProvider).execute();
-
     state = AsyncValue.data(await _convertPostsToPostDetails(posts));
     return await _convertPostsToPostDetails(posts);
   }
 
   Future<void> getPostsByIds(List<String> postIds) async {
-    state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final posts =
           await ref.read(getPostsByIdsUseCaseProvider).execute(postIds);
+
       return await _convertPostsToPostDetails(posts);
     });
   }
@@ -165,8 +165,6 @@ class PostViewModel extends AsyncNotifier<List<PostDetail>> {
 
   Future<List<PostDetail>> _convertPostsToPostDetails(List<Post> posts) async {
     List<PostDetail> postDetails = [];
-
-    print(posts.length);
     for (var post in posts) {
       try {
         final user =
