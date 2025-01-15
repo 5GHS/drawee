@@ -18,7 +18,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  late String _recommendId;
+  // late String _recommendId;
   late AsyncValue<RecommendSubject?> _recommendAsync;
   @override
   void initState() {
@@ -27,18 +27,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       _recommendAsync = await ref.watch(recommendSubjectViewModelProvider);
 
-      _recommendId = await _recommendAsync.when(
+      _recommendAsync.when(
         data: (data) {
           if (data == null) {
             throw Error();
           }
-
-          return data.subjectId;
+          ref
+              .watch(postViewModelProvider.notifier)
+              .getPostsBySubject(data.subjectId);
         },
         error: (error, stackTrace) => 'error',
         loading: () => 'loading',
       );
-      ref.watch(postViewModelProvider.notifier).getPostsBySubject(_recommendId);
+      // print("recommendId : $_recommendId");
     });
   }
 

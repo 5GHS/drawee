@@ -51,28 +51,28 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (widget.fromHome != null) {
-        final selectedWeather = WeatherType.values.firstWhere(
-          (weather) => weather.label == widget.fromHome,
-          orElse: () => WeatherType.all,
-        );
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   if (widget.fromHome != null) {
+    //     final selectedWeather = WeatherType.values.firstWhere(
+    //       (weather) => weather.label == widget.fromHome,
+    //       orElse: () => WeatherType.all,
+    //     );
 
-        setState(() {
-          _selectedWeather = selectedWeather;
-        });
+    //     setState(() {
+    //       _selectedWeather = selectedWeather;
+    //     });
 
-        ref
-            .watch(postViewModelProvider.notifier)
-            .getPostsByWeather(selectedWeather.label);
-      } else {
-        setState(() {
-          _selectedWeather = WeatherType.all;
-        });
+    //     ref
+    //         .watch(postViewModelProvider.notifier)
+    //         .getPostsByWeather(selectedWeather.label);
+    //   } else {
+    //     setState(() {
+    //       _selectedWeather = WeatherType.all;
+    //     });
 
-        ref.read(postViewModelProvider.notifier).getPosts();
-      }
-    });
+    //     ref.read(postViewModelProvider.notifier).getPosts();
+    //   }
+    // });
   }
 
   @override
@@ -154,7 +154,6 @@ class _WeatherPostPageState extends ConsumerState<WeatherPostPage> {
             Expanded(
               child: postsAsync.when(
                 data: (posts) {
-                  print(posts.length);
                   if (posts.isEmpty) {
                     return const Center(
                       child: Text('포스트가 없습니다.'),
